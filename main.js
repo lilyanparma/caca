@@ -9,6 +9,3 @@ function processSale(product, finalPrice, paymentMethod, discountInfo = null) {
     const invoice = invoiceSystem.createInvoice(product, finalPrice, paymentMethod, discountInfo);
     invoiceSystem.showInvoice(invoice);
     
-    // ... أي معالجة إضافية بعد إنشاء الفاتورة
-}
-
