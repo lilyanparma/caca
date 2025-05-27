@@ -1,105 +1,157 @@
 // main.js
+import { db } from './firebase-config.js';
+import InvoiceSystem from './invoice-system.js';
+import { collection, getDocs, query, where } from "firebase/firestore";
 
-document.addEventListener('DOMContentLoaded', function() {
-    // تهيئة نظام الفواتير
+document.addEventListener('DOMContentLoaded', async () => {
+    // تهيئة النظام
     const invoiceSystem = new InvoiceSystem();
     
-    // تعريف العناصر الرئيسية
+    // عناصر واجهة المستخدم
     const elements = {
-        sellBtn: document.getElementById('sellBtn'),
-        finalPriceValue: document.getElementById('finalPriceValue'),
-        percentDiscountBtn: document.getElementById('percentDiscountBtn'),
-        discountPercent: document.getElementById('discountPercent'),
-        discountAmount: document.getElementById('discountAmount'),
-        reasonInput: document.getElementById('reasonInput'),
+        barcodeInput: document.getElementById('barcodeInput'),
         productName: document.getElementById('productName'),
-        productImage: document.getElementById('productImage')
-    };
-    
-    // بيانات المنتجات الوهمية
-    const mockProducts = {
-        "123456789012": {
-            name: "شوكولاتة داكنة 100جم",
-            price: 25.99,
-            quantity: 15,
-            image: "https://fakeimg.pl/150x150/?text=شوكولاتة&font=tajawal"
-        },
-        "987654321098": {
-            name: "مشروب غازي 330مل",
-            price: 10.50,
-            quantity: 30,
-            image: "https://fakeimg.pl/150x150/?text=مشروب&font=tajawal"
-        },
-        "456789123456": {
-            name: "أرز بسمتي 5 كجم",
-            price: 45.75,
-            quantity: 8,
-            image: "https://fakeimg.pl/150x150/?text=أرز&font=tajawal"
-        }
+        productImage: document.getElementById('productImage'),
+        productPrice: document.getElementById('productPrice'),
+        productQuantity: document.getElementById('productQuantity'),
+        sellBtn: document.getElementById('sellBtn'),
+        invoicesList: document.getElementById('invoicesList')
     };
     
     // متغيرات النظام
-    let currentProduct = null;
-    let paymentMethod = 'cash';
-    
-    // دالة عرض التنبيهات
-    function showToast(message, type = 'info', duration = 3000) {
-        console.log(`[${type}] ${message}`);
-        // يمكنك تنفيذ واجهة تنبيهات أفضل هنا
+    let currentCart = [];
+    let currentCustomer = null;
+
+    // دالة البحث عن منتج بالباركود
+    async function searchProduct(barcode) {
+        try {
+            const q = query(collection(db, "products"), where("barcode", "==", barcode));
+            const querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                showToast("المنتج غير موجود", "error");
+                return null;
+            }
+            
+            return {
+                id: querySnapshot.docs[0].id,
+                ...querySnapshot.docs[0].data()
+            };
+        } catch (error) {
+            console.error("Error searching product: ", error);
+            showToast("حدث خطأ في البحث عن المنتج", "error");
+            return null;
+        }
     }
-    
-    // دالة إعادة تعيين النظام
-    function resetSystem() {
-        currentProduct = null;
-        // أضف أي إعادة تعيين أخرى تحتاجها هنا
+
+    // دالة عرض المنتج
+    function displayProduct(product) {
+        elements.productName.textContent = product.name;
+        elements.productPrice.textContent = product.price.toFixed(2) + ' ر.س';
+        elements.productQuantity.textContent = `المخزون: ${product.quantity}`;
+        elements.productImage.src = product.image || 'images/default-product.png';
+        elements.productImage.onerror = () => {
+            elements.productImage.src = 'images/default-product.png';
+        };
     }
-    
-    // حدث زر البيع
-    elements.sellBtn.addEventListener('click', function() {
-        if (!currentProduct) {
-            showToast('لم يتم اختيار منتج', 'error');
+
+    // دالة إضافة منتج للسلة
+    function addToCart(product, quantity = 1) {
+        const existingItem = currentCart.find(item => item.productId === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            currentCart.push({
+                productId: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: quantity,
+                originalQuantity: product.quantity
+            });
+        }
+        
+        updateCartDisplay();
+    }
+
+    // دالة تحديث عرض السلة
+    function updateCartDisplay() {
+        // هنا يمكنك تحديث واجهة السلة حسب احتياجاتك
+        console.log("السلة الحالية:", currentCart);
+    }
+
+    // دالة إتمام عملية البيع
+    async function completeSale(paymentMethod) {
+        if (currentCart.length === 0) {
+            showToast("السلة فارغة", "error");
             return;
         }
         
-        const finalPrice = parseFloat(elements.finalPriceValue.textContent);
-        const discountApplied = finalPrice < currentProduct.price;
-        let discountInfo = null;
-        
-        if (discountApplied) {
-            const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
-            const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
-            
-            discountInfo = {
-                type: discountType,
-                value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
-                reason: reason
+        try {
+            // تحضير بيانات الفاتورة
+            const invoiceData = {
+                customer: currentCustomer || { name: "عميل نقدي" },
+                items: currentCart.map(item => ({
+                    productId: item.productId,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    newQuantity: item.originalQuantity - item.quantity
+                })),
+                subtotal: currentCart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                paymentMethod: paymentMethod,
+                status: "completed"
             };
+            
+            // إنشاء الفاتورة
+            const invoiceId = await invoiceSystem.createInvoice(invoiceData);
+            
+            showToast(`تم إتمام البيع بنجاح - رقم الفاتورة: ${invoiceId}`, "success");
+            
+            // إعادة تعيين النظام
+            currentCart = [];
+            updateCartDisplay();
+            
+        } catch (error) {
+            console.error("Error completing sale: ", error);
+            showToast("حدث خطأ أثناء إتمام البيع", "error");
         }
-        
-        // إنشاء وعرض الفاتورة
-        const invoice = invoiceSystem.createInvoice(
-            currentProduct,
-            finalPrice,
-            paymentMethod,
-            discountInfo
-        );
-        
-        invoiceSystem.showInvoice(invoice);
-        
-        // إعادة تعيين النظام
-        resetSystem();
-        
-        showToast('تمت عملية البيع بنجاح', 'success');
-    });
-    
-    // دالة لعرض منتج (لأغراض الاختبار)
-    function displayTestProduct() {
-        currentProduct = mockProducts["123456789012"];
-        elements.productName.textContent = currentProduct.name;
-        elements.productImage.src = currentProduct.image;
-        elements.finalPriceValue.textContent = currentProduct.price.toFixed(2);
     }
-    
-    // اختبار العرض (يمكن حذفها لاحقاً)
-    displayTestProduct();
+
+    // أحداث واجهة المستخدم
+    elements.barcodeInput.addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const barcode = elements.barcodeInput.value.trim();
+            if (!barcode) return;
+            
+            const product = await searchProduct(barcode);
+            if (product) {
+                displayProduct(product);
+                addToCart(product, 1);
+                elements.barcodeInput.value = '';
+            }
+        }
+    });
+
+    elements.sellBtn.addEventListener('click', () => {
+        completeSale('cash'); // يمكنك تغيير طريقة الدفع حسب الاختيار
+    });
+
+    // تحميل المنتجات عند بدء التشغيل
+    async function loadInitialData() {
+        try {
+            const products = await invoiceSystem.getProducts();
+            console.log("المنتجات المحملة:", products);
+        } catch (error) {
+            console.error("Error loading initial data: ", error);
+        }
+    }
+
+    loadInitialData();
 });
+
+// دالة عرض التنبيهات
+function showToast(message, type = 'info') {
+    console.log(`[${type}] ${message}`);
+    // يمكنك استبدال هذا بتنفيذ واجهة تنبيهات أفضل
+}
