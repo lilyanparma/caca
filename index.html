@@ -868,31 +868,52 @@
             invoiceContainer: document.getElementById('invoiceContainer')
         };
         
-        // 4. تحميل نظام الفواتير الخارجي
-        function loadInvoiceSystem() {
-            return new Promise((resolve, reject) => {
-                const invoiceIframe = document.createElement('iframe');
-                invoiceIframe.src = 'invoice.html';
-                invoiceIframe.style.display = 'none';
-                invoiceIframe.name = 'invoiceFrame';
-                
-                invoiceIframe.onload = function() {
-                    try {
-                        // الوصول إلى InvoiceSystem من iframe
-                        const invoiceSystem = frames['invoiceFrame'].InvoiceSystem;
-                        resolve(new invoiceSystem());
-                    } catch (error) {
-                        reject(error);
+function loadInvoiceSystem() {
+    return new Promise((resolve, reject) => {
+        const invoiceIframe = document.createElement('iframe');
+        invoiceIframe.src = 'invoice.html';
+        invoiceIframe.style.display = 'none';
+        invoiceIframe.name = 'invoiceFrame';
+        
+        invoiceIframe.onload = function() {
+            try {
+                // الانتظار لمدة قصيرة للتأكد من تحميل الكود بالكامل
+                setTimeout(() => {
+                    if (frames['invoiceFrame'] && frames['invoiceFrame'].InvoiceSystem) {
+                        const invoiceSystem = new frames['invoiceFrame'].InvoiceSystem();
+                        console.log('تم تحميل نظام الفواتير بنجاح');
+                        resolve(invoiceSystem);
+                    } else {
+                        reject(new Error('لم يتم العثور على نظام الفواتير'));
                     }
-                };
-                
-                invoiceIframe.onerror = function() {
-                    reject(new Error('فشل تحميل نظام الفواتير'));
-                };
-                
-                elements.invoiceContainer.appendChild(invoiceIframe);
-            });
-        }
+                }, 300);
+            } catch (error) {
+                reject(error);
+            }
+        };
+        
+        invoiceIframe.onerror = function() {
+            reject(new Error('فشل تحميل نظام الفواتير'));
+        };
+        
+        elements.invoiceContainer.appendChild(invoiceIframe);
+    });
+}
+
+function checkInvoiceSystemReady() {
+    return new Promise((resolve) => {
+        const check = () => {
+            if (frames['invoiceFrame'] && 
+                frames['invoiceFrame'].invoiceHelpers && 
+                typeof frames['invoiceFrame'].invoiceHelpers.showInvoice === 'function') {
+                resolve(true);
+            } else {
+                setTimeout(check, 100);
+            }
+        };
+        check();
+    });
+}
         
         // 5. تهيئة النظام عند التحميل
         window.addEventListener('DOMContentLoaded', async function() {
@@ -970,54 +991,60 @@
                 elements.cardPayment.classList.remove('active');
             });
             
-            // 11. عملية البيع
-            elements.sellBtn.addEventListener('click', function() {
-                if (!currentProduct) return;
-                
-                const finalPrice = parseFloat(elements.finalPriceValue.textContent);
-                const basePrice = currentProduct.price;
-                const discountApplied = finalPrice < basePrice;
-                let discountInfo = null;
-                
-                if (discountApplied) {
-                    const discountValue = (basePrice - finalPrice).toFixed(2);
-                    const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
-                    const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
-                    
-                    discountInfo = {
-                        type: discountType,
-                        value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
-                        reason: reason
-                    };
-                }
-                
-                // تحديث المخزون في قاعدة البيانات
-                const newQuantity = currentProduct.quantity - 1;
-                
-                database.ref('products/' + currentProduct.barcode).update({
-                    quantity: newQuantity
-                })
-                .then(() => {
-                    // إنشاء وعرض الفاتورة باستخدام نظام الفواتير المنفصل
-                    const invoice = invoiceSystem.createInvoice(currentProduct, finalPrice, paymentMethod, discountInfo);
-                    
-                    // حفظ الفاتورة في قاعدة البيانات
-                    invoiceSystem.saveInvoiceToDatabase(invoice, database)
-                        .then(() => {
-                            invoiceSystem.showInvoice(invoice);
-                            resetSystem();
-                        })
-                        .catch(error => {
-                            console.error('خطأ في حفظ الفاتورة:', error);
-                            showToast('حدث خطأ أثناء حفظ الفاتورة', 'error');
-                        });
-                })
-                .catch((error) => {
-                    console.error('خطأ في تحديث المخزون:', error);
-                    showToast('حدث خطأ أثناء تحديث المخزون', 'error');
-                });
-            });
-            
+// عملية البيع المعدلة
+elements.sellBtn.addEventListener('click', async function() {
+    if (!currentProduct || !invoiceSystem) {
+        showToast('النظام غير جاهز، يرجى المحاولة لاحقاً', 'error');
+        return;
+    }
+    
+    const finalPrice = parseFloat(elements.finalPriceValue.textContent);
+    const basePrice = currentProduct.price;
+    const discountApplied = finalPrice < basePrice;
+    let discountInfo = null;
+    
+    if (discountApplied) {
+        const discountValue = (basePrice - finalPrice).toFixed(2);
+        const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
+        const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
+        
+        discountInfo = {
+            type: discountType,
+            value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
+            reason: reason
+        };
+    }
+    
+    try {
+        showToast('جارٍ معالجة عملية البيع...', 'info');
+        
+        // 1. تحديث المخزون في قاعدة البيانات
+        const newQuantity = currentProduct.quantity - 1;
+        await database.ref('products/' + currentProduct.barcode).update({
+            quantity: newQuantity
+        });
+        
+        // 2. إنشاء الفاتورة
+        const invoice = invoiceSystem.createInvoice(currentProduct, finalPrice, paymentMethod, discountInfo);
+        
+        // 3. حفظ الفاتورة في قاعدة البيانات
+        await invoiceSystem.saveInvoiceToDatabase(invoice, database);
+        
+        // 4. عرض الفاتورة
+       await checkInvoiceSystemReady();
+frames['invoiceFrame'].invoiceHelpers.showInvoice(invoice);
+        
+        // 5. إظهار إشعار النجاح
+        showToast('تمت عملية البيع بنجاح', 'success');
+        
+        // 6. إعادة تعيين النظام
+        resetSystem();
+        
+    } catch (error) {
+        console.error('حدث خطأ أثناء البيع:', error);
+        showToast('حدث خطأ أثناء عملية البيع: ' + error.message, 'error');
+    }
+});            
             // 12. عملية إرجاع المنتج
             elements.returnBtn.addEventListener('click', function() {
                 if (!currentProduct) {
