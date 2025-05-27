@@ -489,115 +489,6 @@
             to { transform: translateX(100%); opacity: 0; }
         }
         
-        .invoice-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s;
-        }
-        
-        .invoice-content {
-            background: white;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transform: scale(0.9);
-            animation: scaleUp 0.3s forwards;
-        }
-        
-        @keyframes scaleUp {
-            to { transform: scale(1); }
-        }
-        
-        .invoice-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .invoice-header h2 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
-        
-        .close-invoice {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .invoice-body {
-            padding: 20px;
-        }
-        
-        .invoice-pharmacy {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--primary);
-        }
-        
-        .invoice-details {
-            margin-bottom: 20px;
-        }
-        
-        .invoice-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px dashed #eee;
-        }
-        
-        .invoice-row.total {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--primary);
-            border-bottom: none;
-            margin-top: 10px;
-        }
-        
-        .invoice-footer {
-            text-align: center;
-            padding: 15px;
-            background: #f9f9f9;
-            font-size: 0.9rem;
-            color: var(--gray);
-        }
-        
-        .invoice-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .invoice-actions .btn {
-            flex: 1;
-        }
-        
         /* أنماط جديدة لوظيفة الإرجاع */
         .modal-overlay {
             position: fixed;
@@ -757,14 +648,6 @@
                 max-width: none;
             }
             
-            .invoice-content {
-                width: 95%;
-            }
-            
-            .invoice-header h2 {
-                font-size: 1.3rem;
-            }
-            
             .confirmation-modal {
                 padding: 20px 15px;
             }
@@ -897,66 +780,6 @@
         </div>
     </div>
 
-    <!-- نافذة الفاتورة -->
-    <div id="invoiceModal" class="invoice-modal">
-        <div class="invoice-content">
-            <div class="invoice-header">
-                <button id="closeInvoice" class="close-invoice">
-                    <i class="fas fa-times"></i>
-                </button>
-                <h2><i class="fas fa-receipt"></i> فاتورة بيع</h2>
-            </div>
-            <div class="invoice-body">
-                <div id="invoicePharmacy" class="invoice-pharmacy">صيدلية النخبة</div>
-                <div class="invoice-details">
-                    <div class="invoice-row">
-                        <span>رقم الفاتورة:</span>
-                        <span id="invoiceNumber">#0001</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>التاريخ والوقت:</span>
-                        <span id="invoiceDate">01/01/2023 10:00 ص</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>المنتج:</span>
-                        <span id="invoiceProduct">اسم المنتج</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>السعر الأصلي:</span>
-                        <span id="invoiceOriginalPrice">50.00 ر.س</span>
-                    </div>
-                    <div class="invoice-row" id="invoiceDiscountRow" style="display: none;">
-                        <span>الخصم:</span>
-                        <span id="invoiceDiscount">0.00 ر.س (0%)</span>
-                    </div>
-                    <div class="invoice-row" id="invoiceReasonRow" style="display: none;">
-                        <span>سبب الخصم:</span>
-                        <span id="invoiceReason">لا يوجد</span>
-                    </div>
-                    <div class="invoice-row total">
-                        <span>المجموع:</span>
-                        <span id="invoiceTotal">50.00 ر.س</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>طريقة الدفع:</span>
-                        <span id="invoicePaymentMethod">نقداً</span>
-                    </div>
-                </div>
-                <div class="invoice-actions">
-                    <button id="printInvoice" class="btn btn-primary">
-                        <i class="fas fa-print"></i> طباعة
-                    </button>
-                    <button id="saveInvoice" class="btn btn-success">
-                        <i class="fas fa-save"></i> حفظ
-                    </button>
-                </div>
-            </div>
-            <div class="invoice-footer">
-                شكراً لثقتكم بنا - للاستفسار: 0551234567
-            </div>
-        </div>
-    </div>
-    
     <!-- نافذة تأكيد الإرجاع -->
     <div id="returnConfirmModal" class="modal-overlay">
         <div class="confirmation-modal">
@@ -980,6 +803,9 @@
     <!-- تنبيهات النظام -->
     <div id="toast" class="toast"></div>
     
+    <!-- حاوية لنظام الفواتير الخارجي -->
+    <div id="invoiceContainer" style="display: none;"></div>
+
     <script>
         // 1. تهيئة Firebase
         const firebaseConfig = {
@@ -1001,8 +827,7 @@
         let cameraActive = false;
         let currentProduct = null;
         let paymentMethod = 'cash';
-        let invoiceCounter = 1;
-        const pharmacyName = "صيدلية النخبة";
+        let invoiceSystem; // سيتم تهيئتها بعد تحميل نظام الفواتير
         
         // 3. عناصر واجهة المستخدم
         const elements = {
@@ -1033,47 +858,196 @@
             sellBtn: document.getElementById('sellBtn'),
             returnBtn: document.getElementById('returnBtn'),
             toast: document.getElementById('toast'),
-            invoiceModal: document.getElementById('invoiceModal'),
-            closeInvoice: document.getElementById('closeInvoice'),
-            invoiceNumber: document.getElementById('invoiceNumber'),
-            invoiceDate: document.getElementById('invoiceDate'),
-            invoicePharmacy: document.getElementById('invoicePharmacy'),
-            invoiceProduct: document.getElementById('invoiceProduct'),
-            invoiceOriginalPrice: document.getElementById('invoiceOriginalPrice'),
-            invoiceDiscountRow: document.getElementById('invoiceDiscountRow'),
-            invoiceDiscount: document.getElementById('invoiceDiscount'),
-            invoiceReasonRow: document.getElementById('invoiceReasonRow'),
-            invoiceReason: document.getElementById('invoiceReason'),
-            invoiceTotal: document.getElementById('invoiceTotal'),
-            invoicePaymentMethod: document.getElementById('invoicePaymentMethod'),
-            printInvoice: document.getElementById('printInvoice'),
-            saveInvoice: document.getElementById('saveInvoice'),
             returnConfirmModal: document.getElementById('returnConfirmModal'),
             returnConfirmText: document.getElementById('returnConfirmText'),
             returnReasonInput: document.getElementById('returnReasonInput'),
             confirmReturnBtn: document.getElementById('confirmReturnBtn'),
             cancelReturnBtn: document.getElementById('cancelReturnBtn'),
             returnSuccessNotice: document.getElementById('returnSuccessNotice'),
-            returnSuccessText: document.getElementById('returnSuccessText')
+            returnSuccessText: document.getElementById('returnSuccessText'),
+            invoiceContainer: document.getElementById('invoiceContainer')
         };
         
-        // 4. التحكم في شريط البحث
-        elements.searchToggle.addEventListener('click', function() {
-            toggleSearch();
-            if (elements.barcodeInput.value.trim()) {
-                searchProduct();
+        // 4. تحميل نظام الفواتير الخارجي
+        function loadInvoiceSystem() {
+            return new Promise((resolve, reject) => {
+                const invoiceIframe = document.createElement('iframe');
+                invoiceIframe.src = 'invoice.html';
+                invoiceIframe.style.display = 'none';
+                invoiceIframe.name = 'invoiceFrame';
+                
+                invoiceIframe.onload = function() {
+                    try {
+                        // الوصول إلى InvoiceSystem من iframe
+                        const invoiceSystem = frames['invoiceFrame'].InvoiceSystem;
+                        resolve(new invoiceSystem());
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                invoiceIframe.onerror = function() {
+                    reject(new Error('فشل تحميل نظام الفواتير'));
+                };
+                
+                elements.invoiceContainer.appendChild(invoiceIframe);
+            });
+        }
+        
+        // 5. تهيئة النظام عند التحميل
+        window.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // تحميل نظام الفواتير
+                invoiceSystem = await loadInvoiceSystem();
+                console.log('تم تحميل نظام الفواتير بنجاح');
+                
+                // تهيئة باقي النظام
+                initSystem();
+            } catch (error) {
+                console.error('حدث خطأ في تحميل نظام الفواتير:', error);
+                showToast('حدث خطأ في تحميل نظام الفواتير', 'error');
             }
         });
         
+        function initSystem() {
+            // 6. التحكم في شريط البحث
+            elements.searchToggle.addEventListener('click', function() {
+                toggleSearch();
+                if (elements.barcodeInput.value.trim()) {
+                    searchProduct();
+                }
+            });
+            
+            // 7. التحكم في كاميرا الباركود
+            elements.cameraBtn.addEventListener('click', toggleCamera);
+            
+            // 8. البحث عن المنتج في قاعدة البيانات
+            elements.barcodeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') searchProduct();
+            });
+            
+            // 9. نظام الخصم
+            elements.applyDiscount.addEventListener('click', function() {
+                elements.discountSection.style.display = 
+                    elements.discountSection.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            elements.percentDiscountBtn.addEventListener('click', function() {
+                elements.percentDiscountBtn.classList.add('active');
+                elements.fixedDiscountBtn.classList.remove('active');
+                elements.percentDiscountGroup.style.display = 'block';
+                elements.fixedDiscountGroup.style.display = 'none';
+            });
+            
+            elements.fixedDiscountBtn.addEventListener('click', function() {
+                elements.fixedDiscountBtn.classList.add('active');
+                elements.percentDiscountBtn.classList.remove('active');
+                elements.fixedDiscountGroup.style.display = 'block';
+                elements.percentDiscountGroup.style.display = 'none';
+            });
+            
+            elements.confirmDiscount.addEventListener('click', applyDiscount);
+            
+            // 10. اختيار طريقة الدفع
+            elements.cashPayment.addEventListener('click', function() {
+                paymentMethod = 'cash';
+                elements.cashPayment.classList.add('active');
+                elements.cardPayment.classList.remove('active');
+                elements.transferPayment.classList.remove('active');
+            });
+            
+            elements.cardPayment.addEventListener('click', function() {
+                paymentMethod = 'card';
+                elements.cardPayment.classList.add('active');
+                elements.cashPayment.classList.remove('active');
+                elements.transferPayment.classList.remove('active');
+            });
+            
+            elements.transferPayment.addEventListener('click', function() {
+                paymentMethod = 'transfer';
+                elements.transferPayment.classList.add('active');
+                elements.cashPayment.classList.remove('active');
+                elements.cardPayment.classList.remove('active');
+            });
+            
+            // 11. عملية البيع
+            elements.sellBtn.addEventListener('click', function() {
+                if (!currentProduct) return;
+                
+                const finalPrice = parseFloat(elements.finalPriceValue.textContent);
+                const basePrice = currentProduct.price;
+                const discountApplied = finalPrice < basePrice;
+                let discountInfo = null;
+                
+                if (discountApplied) {
+                    const discountValue = (basePrice - finalPrice).toFixed(2);
+                    const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
+                    const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
+                    
+                    discountInfo = {
+                        type: discountType,
+                        value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
+                        reason: reason
+                    };
+                }
+                
+                // تحديث المخزون في قاعدة البيانات
+                const newQuantity = currentProduct.quantity - 1;
+                
+                database.ref('products/' + currentProduct.barcode).update({
+                    quantity: newQuantity
+                })
+                .then(() => {
+                    // إنشاء وعرض الفاتورة باستخدام نظام الفواتير المنفصل
+                    const invoice = invoiceSystem.createInvoice(currentProduct, finalPrice, paymentMethod, discountInfo);
+                    
+                    // حفظ الفاتورة في قاعدة البيانات
+                    invoiceSystem.saveInvoiceToDatabase(invoice, database)
+                        .then(() => {
+                            invoiceSystem.showInvoice(invoice);
+                            resetSystem();
+                        })
+                        .catch(error => {
+                            console.error('خطأ في حفظ الفاتورة:', error);
+                            showToast('حدث خطأ أثناء حفظ الفاتورة', 'error');
+                        });
+                })
+                .catch((error) => {
+                    console.error('خطأ في تحديث المخزون:', error);
+                    showToast('حدث خطأ أثناء تحديث المخزون', 'error');
+                });
+            });
+            
+            // 12. عملية إرجاع المنتج
+            elements.returnBtn.addEventListener('click', function() {
+                if (!currentProduct) {
+                    showToast('لا يوجد منتج مختار للإرجاع', 'warning');
+                    return;
+                }
+                
+                // عرض نافذة التأكيد
+                elements.returnConfirmText.textContent = `هل أنت متأكد من إرجاع المنتج: ${currentProduct.name}؟`;
+                elements.returnReasonInput.value = '';
+                elements.returnConfirmModal.style.display = 'flex';
+                elements.returnReasonInput.focus();
+            });
+            
+            // تأكيد الإرجاع
+            elements.confirmReturnBtn.addEventListener('click', processProductReturn);
+            
+            // إلغاء الإرجاع
+            elements.cancelReturnBtn.addEventListener('click', function() {
+                elements.returnConfirmModal.style.display = 'none';
+            });
+        }
+        
+        // 13. دوال النظام الأساسية
         function toggleSearch() {
             elements.searchWrapper.style.display = elements.searchWrapper.style.display === 'flex' ? 'none' : 'flex';
             if (elements.searchWrapper.style.display === 'flex') {
                 elements.barcodeInput.focus();
             }
         }
-        
-        // 5. التحكم في كاميرا الباركود
-        elements.cameraBtn.addEventListener('click', toggleCamera);
         
         async function toggleCamera() {
             if (cameraActive) {
@@ -1120,17 +1094,11 @@
             cameraActive = false;
         }
         
-        // 6. معالجة الباركود
         function handleBarcode(barcode) {
             elements.barcodeInput.value = barcode;
             stopCamera();
             searchProduct();
         }
-        
-        // 7. البحث عن المنتج في قاعدة البيانات
-        elements.barcodeInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') searchProduct();
-        });
         
         function searchProduct() {
             const barcode = elements.barcodeInput.value.trim();
@@ -1186,28 +1154,6 @@
             elements.cardPayment.classList.remove('active');
             elements.transferPayment.classList.remove('active');
         }
-        
-        // 8. نظام الخصم
-        elements.applyDiscount.addEventListener('click', function() {
-            elements.discountSection.style.display = 
-                elements.discountSection.style.display === 'block' ? 'none' : 'block';
-        });
-        
-        elements.percentDiscountBtn.addEventListener('click', function() {
-            elements.percentDiscountBtn.classList.add('active');
-            elements.fixedDiscountBtn.classList.remove('active');
-            elements.percentDiscountGroup.style.display = 'block';
-            elements.fixedDiscountGroup.style.display = 'none';
-        });
-        
-        elements.fixedDiscountBtn.addEventListener('click', function() {
-            elements.fixedDiscountBtn.classList.add('active');
-            elements.percentDiscountBtn.classList.remove('active');
-            elements.fixedDiscountGroup.style.display = 'block';
-            elements.percentDiscountGroup.style.display = 'none';
-        });
-        
-        elements.confirmDiscount.addEventListener('click', applyDiscount);
         
         function applyDiscount() {
             const basePrice = currentProduct.price;
@@ -1266,96 +1212,6 @@
             }
         }
         
-        // 9. اختيار طريقة الدفع
-        elements.cashPayment.addEventListener('click', function() {
-            paymentMethod = 'cash';
-            elements.cashPayment.classList.add('active');
-            elements.cardPayment.classList.remove('active');
-            elements.transferPayment.classList.remove('active');
-        });
-        
-        elements.cardPayment.addEventListener('click', function() {
-            paymentMethod = 'card';
-            elements.cardPayment.classList.add('active');
-            elements.cashPayment.classList.remove('active');
-            elements.transferPayment.classList.remove('active');
-        });
-        
-        elements.transferPayment.addEventListener('click', function() {
-            paymentMethod = 'transfer';
-            elements.transferPayment.classList.add('active');
-            elements.cashPayment.classList.remove('active');
-            elements.cardPayment.classList.remove('active');
-        });
-        
-        // 10. عملية البيع مع تحديث المخزون في Firebase
-        elements.sellBtn.addEventListener('click', function() {
-            if (!currentProduct) return;
-            
-            const finalPrice = parseFloat(elements.finalPriceValue.textContent);
-            const basePrice = currentProduct.price;
-            const discountApplied = finalPrice < basePrice;
-            let discountInfo = null;
-            
-            if (discountApplied) {
-                const discountValue = (basePrice - finalPrice).toFixed(2);
-                const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
-                const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
-                
-                discountInfo = {
-                    type: discountType,
-                    value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
-                    reason: reason
-                };
-            }
-            
-            // تحديث المخزون في قاعدة البيانات
-            const newQuantity = currentProduct.quantity - 1;
-            
-            database.ref('products/' + currentProduct.barcode).update({
-                quantity: newQuantity
-            })
-            .then(() => {
-                // إنشاء الفاتورة
-                const invoice = createInvoice(currentProduct, finalPrice, paymentMethod, discountInfo);
-                
-                // حفظ الفاتورة في قاعدة البيانات
-                saveInvoiceToDatabase(invoice);
-                
-                // عرض الفاتورة
-                showInvoice(invoice);
-                
-                // إعادة تعيين النظام
-                resetSystem();
-            })
-            .catch((error) => {
-                console.error('خطأ في تحديث المخزون:', error);
-                showToast('حدث خطأ أثناء تحديث المخزون', 'error');
-            });
-        });
-        
-        // 11. وظيفة إرجاع المنتج
-        elements.returnBtn.addEventListener('click', function() {
-            if (!currentProduct) {
-                showToast('لا يوجد منتج مختار للإرجاع', 'warning');
-                return;
-            }
-            
-            // عرض نافذة التأكيد
-            elements.returnConfirmText.textContent = `هل أنت متأكد من إرجاع المنتج: ${currentProduct.name}؟`;
-            elements.returnReasonInput.value = '';
-            elements.returnConfirmModal.style.display = 'flex';
-            elements.returnReasonInput.focus();
-        });
-        
-        // تأكيد الإرجاع
-        elements.confirmReturnBtn.addEventListener('click', processProductReturn);
-        
-        // إلغاء الإرجاع
-        elements.cancelReturnBtn.addEventListener('click', function() {
-            elements.returnConfirmModal.style.display = 'none';
-        });
-        
         async function processProductReturn() {
             elements.returnConfirmModal.style.display = 'none';
             const returnReason = elements.returnReasonInput.value.trim() || 'غير محدد';
@@ -1384,7 +1240,7 @@
                 // 3. إنشاء فاتورة إرجاع
                 const now = new Date();
                 const invoiceId = 'RET-' + now.getFullYear() + (now.getMonth()+1).toString().padStart(2, '0') + 
-                                  now.getDate().toString().padStart(2, '0') + '-' + invoiceCounter.toString().padStart(4, '0');
+                                  now.getDate().toString().padStart(2, '0') + '-' + invoiceSystem.invoiceCounter.toString().padStart(4, '0');
                 
                 const returnInvoice = {
                     id: invoiceId,
@@ -1396,8 +1252,8 @@
                     originalBarcode: currentProduct.barcode
                 };
                 
-                await database.ref('invoices/').push(returnInvoice);
-                invoiceCounter++;
+                await invoiceSystem.saveInvoiceToDatabase(returnInvoice, database);
+                invoiceSystem.invoiceCounter++;
                 
                 // 4. عرض إشعار النجاح
                 showReturnSuccess(currentProduct.name, currentProduct.price);
@@ -1420,108 +1276,6 @@
             }, 3000);
         }
         
-        // 12. نظام الفواتير
-        let invoices = [];
-        
-        function createInvoice(product, finalPrice, paymentMethod, discountInfo = null) {
-            const now = new Date();
-            const invoiceId = 'INV-' + now.getFullYear() + (now.getMonth()+1).toString().padStart(2, '0') + 
-                              now.getDate().toString().padStart(2, '0') + '-' + invoiceCounter.toString().padStart(4, '0');
-            
-            const invoice = {
-                id: invoiceId,
-                date: now.toISOString(),
-                pharmacy: pharmacyName,
-                product: product.name,
-                originalPrice: product.price,
-                finalPrice: finalPrice,
-                paymentMethod: paymentMethod,
-                discount: discountInfo
-            };
-            
-            invoices.push(invoice);
-            invoiceCounter++;
-            
-            return invoice;
-        }
-        
-        function showInvoice(invoice) {
-            const date = new Date(invoice.date);
-            const dateStr = date.toLocaleDateString('ar-SA') + ' ' + 
-                            date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
-            
-            elements.invoiceNumber.textContent = invoice.id;
-            elements.invoiceDate.textContent = dateStr;
-            elements.invoicePharmacy.textContent = invoice.pharmacy;
-            elements.invoiceProduct.textContent = invoice.product;
-            elements.invoiceOriginalPrice.textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
-            elements.invoiceTotal.textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
-            
-            let paymentMethodText = 'نقداً';
-            if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
-            else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
-            elements.invoicePaymentMethod.textContent = paymentMethodText;
-            
-            if (invoice.discount) {
-                elements.invoiceDiscountRow.style.display = 'flex';
-                elements.invoiceReasonRow.style.display = 'flex';
-                
-                const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
-                if (invoice.discount.type === 'percent') {
-                    elements.invoiceDiscount.textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
-                } else {
-                    elements.invoiceDiscount.textContent = `${discountValue} ر.س`;
-                }
-                
-                elements.invoiceReason.textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
-            } else {
-                elements.invoiceDiscountRow.style.display = 'none';
-                elements.invoiceReasonRow.style.display = 'none';
-            }
-            
-            elements.invoiceModal.style.display = 'flex';
-        }
-        
-        function saveInvoiceToDatabase(invoice) {
-            const invoiceRef = database.ref('invoices').push();
-            invoiceRef.set(invoice)
-                .then(() => {
-                    console.log('تم حفظ الفاتورة بنجاح');
-                })
-                .catch((error) => {
-                    console.error('خطأ في حفظ الفاتورة:', error);
-                });
-        }
-        
-        elements.closeInvoice.addEventListener('click', function() {
-            elements.invoiceModal.style.display = 'none';
-        });
-        
-        elements.printInvoice.addEventListener('click', function() {
-            window.print();
-        });
-        
-        elements.saveInvoice.addEventListener('click', function() {
-            saveInvoiceToFile();
-            showToast('تم حفظ الفاتورة بنجاح', 'success');
-        });
-        
-        function saveInvoiceToFile() {
-            if (invoices.length === 0) return;
-            
-            const lastInvoice = invoices[invoices.length - 1];
-            const dataStr = JSON.stringify(lastInvoice, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `فاتورة_${lastInvoice.id}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-        
-        // 13. إعادة تعيين النظام
         function resetSystem() {
             elements.barcodeInput.value = '';
             elements.productDetails.style.display = 'none';
@@ -1529,7 +1283,6 @@
             currentProduct = null;
         }
         
-        // 14. عرض التنبيهات
         function showToast(message, type = 'info', duration = 3000) {
             const toast = elements.toast;
             toast.textContent = message;
@@ -1554,7 +1307,7 @@
             }, duration);
         }
         
-        // 15. إيقاف الكاميرا عند مغادرة الصفحة
+        // إيقاف الكاميرا عند مغادرة الصفحة
         window.addEventListener('beforeunload', stopCamera);
     </script>
 </body>
