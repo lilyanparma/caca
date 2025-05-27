@@ -3,45 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الفواتير</title>
+    <title>فاتورة البيع</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* أنماط الفاتورة فقط */
-        .invoice-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s;
+        /* أنماط الفاتورة (نفس الأنماط التي كانت في الملف الأصلي) */
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            padding: 20px;
         }
         
         .invoice-content {
             background: white;
-            width: 90%;
+            width: 100%;
             max-width: 500px;
+            margin: 0 auto;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            transform: scale(0.9);
-            animation: scaleUp 0.3s forwards;
-        }
-        
-        @keyframes scaleUp {
-            to { transform: scale(1); }
         }
         
         .invoice-header {
-            background: linear-gradient(135deg, #4361ee, #3f37c9);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             padding: 20px;
             text-align: center;
@@ -53,24 +52,6 @@
             font-size: 1.5rem;
         }
         
-        .close-invoice {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
         .invoice-body {
             padding: 20px;
         }
@@ -80,7 +61,7 @@
             margin-bottom: 20px;
             font-weight: bold;
             font-size: 1.2rem;
-            color: #4361ee;
+            color: var(--primary);
         }
         
         .invoice-details {
@@ -97,7 +78,7 @@
         .invoice-row.total {
             font-weight: bold;
             font-size: 1.1rem;
-            color: #4361ee;
+            color: var(--primary);
             border-bottom: none;
             margin-top: 10px;
         }
@@ -107,7 +88,7 @@
             padding: 15px;
             background: #f9f9f9;
             font-size: 0.9rem;
-            color: #6c757d;
+            color: var(--gray);
         }
         
         .invoice-actions {
@@ -116,294 +97,156 @@
             margin-top: 20px;
         }
         
-        .invoice-actions .btn {
-            flex: 1;
-            padding: 10px;
+        .btn {
+            padding: 10px 20px;
             border: none;
             border-radius: 8px;
-            cursor: pointer;
             font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
-        .invoice-actions .btn-primary {
-            background: #4361ee;
+        .btn-primary {
+            background: var(--primary);
             color: white;
         }
         
-        .invoice-actions .btn-success {
-            background: #2b9348;
+        .btn-success {
+            background: #4cc9f0;
             color: white;
         }
         
-        @media (max-width: 768px) {
-            .invoice-content {
-                width: 95%;
+        @media print {
+            body {
+                background: white;
+                padding: 0;
             }
             
-            .invoice-header h2 {
-                font-size: 1.3rem;
+            .invoice-actions {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <!-- نافذة الفاتورة -->
-    <div id="invoiceModal" class="invoice-modal">
-        <div class="invoice-content">
-            <div class="invoice-header">
-                <button id="closeInvoice" class="close-invoice">
-                    <i class="fas fa-times"></i>
+    <div class="invoice-content">
+        <div class="invoice-header">
+            <h2><i class="fas fa-receipt"></i> فاتورة بيع</h2>
+        </div>
+        <div class="invoice-body">
+            <div id="invoicePharmacy" class="invoice-pharmacy">صيدلية النخبة</div>
+            <div class="invoice-details">
+                <div class="invoice-row">
+                    <span>رقم الفاتورة:</span>
+                    <span id="invoiceNumber">#0001</span>
+                </div>
+                <div class="invoice-row">
+                    <span>التاريخ والوقت:</span>
+                    <span id="invoiceDate">01/01/2023 10:00 ص</span>
+                </div>
+                <div class="invoice-row">
+                    <span>المنتج:</span>
+                    <span id="invoiceProduct">اسم المنتج</span>
+                </div>
+                <div class="invoice-row">
+                    <span>السعر الأصلي:</span>
+                    <span id="invoiceOriginalPrice">50.00 ر.س</span>
+                </div>
+                <div id="invoiceDiscountRow" class="invoice-row" style="display: none;">
+                    <span>الخصم:</span>
+                    <span id="invoiceDiscount">0.00 ر.س (0%)</span>
+                </div>
+                <div id="invoiceReasonRow" class="invoice-row" style="display: none;">
+                    <span>سبب الخصم:</span>
+                    <span id="invoiceReason">لا يوجد</span>
+                </div>
+                <div class="invoice-row total">
+                    <span>المجموع:</span>
+                    <span id="invoiceTotal">50.00 ر.س</span>
+                </div>
+                <div class="invoice-row">
+                    <span>طريقة الدفع:</span>
+                    <span id="invoicePaymentMethod">نقداً</span>
+                </div>
+            </div>
+            <div class="invoice-actions">
+                <button id="printInvoice" class="btn btn-primary">
+                    <i class="fas fa-print"></i> طباعة
                 </button>
-                <h2><i class="fas fa-receipt"></i> فاتورة بيع</h2>
+                <button id="closeInvoice" class="btn btn-success">
+                    <i class="fas fa-times"></i> إغلاق
+                </button>
             </div>
-            <div class="invoice-body">
-                <div id="invoicePharmacy" class="invoice-pharmacy">صيدلية النخبة</div>
-                <div class="invoice-details">
-                    <div class="invoice-row">
-                        <span>رقم الفاتورة:</span>
-                        <span id="invoiceNumber">#0001</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>التاريخ والوقت:</span>
-                        <span id="invoiceDate">01/01/2023 10:00 ص</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>المنتج:</span>
-                        <span id="invoiceProduct">اسم المنتج</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>السعر الأصلي:</span>
-                        <span id="invoiceOriginalPrice">50.00 ر.س</span>
-                    </div>
-                    <div class="invoice-row" id="invoiceDiscountRow" style="display: none;">
-                        <span>الخصم:</span>
-                        <span id="invoiceDiscount">0.00 ر.س (0%)</span>
-                    </div>
-                    <div class="invoice-row" id="invoiceReasonRow" style="display: none;">
-                        <span>سبب الخصم:</span>
-                        <span id="invoiceReason">لا يوجد</span>
-                    </div>
-                    <div class="invoice-row total">
-                        <span>المجموع:</span>
-                        <span id="invoiceTotal">50.00 ر.س</span>
-                    </div>
-                    <div class="invoice-row">
-                        <span>طريقة الدفع:</span>
-                        <span id="invoicePaymentMethod">نقداً</span>
-                    </div>
-                </div>
-                <div class="invoice-actions">
-                    <button id="printInvoice" class="btn btn-primary">
-                        <i class="fas fa-print"></i> طباعة
-                    </button>
-                    <button id="saveInvoice" class="btn btn-success">
-                        <i class="fas fa-save"></i> حفظ
-                    </button>
-                </div>
-            </div>
-            <div class="invoice-footer">
-                شكراً لثقتكم بنا - للاستفسار: 0551234567
-            </div>
+        </div>
+        <div class="invoice-footer">
+            شكراً لثقتكم بنا - للاستفسار: 0551234567
         </div>
     </div>
 
     <script>
-        // نظام الفواتير
-        class InvoiceSystem {
-            constructor() {
-                this.invoiceCounter = 1;
-                this.pharmacyName = "صيدلية النخبة";
-                this.invoices = [];
-                
-                // تهيئة العناصر
-                this.elements = {
-                    invoiceModal: document.getElementById('invoiceModal'),
-                    closeInvoice: document.getElementById('closeInvoice'),
-                    invoiceNumber: document.getElementById('invoiceNumber'),
-                    invoiceDate: document.getElementById('invoiceDate'),
-                    invoicePharmacy: document.getElementById('invoicePharmacy'),
-                    invoiceProduct: document.getElementById('invoiceProduct'),
-                    invoiceOriginalPrice: document.getElementById('invoiceOriginalPrice'),
-                    invoiceDiscountRow: document.getElementById('invoiceDiscountRow'),
-                    invoiceDiscount: document.getElementById('invoiceDiscount'),
-                    invoiceReasonRow: document.getElementById('invoiceReasonRow'),
-                    invoiceReason: document.getElementById('invoiceReason'),
-                    invoiceTotal: document.getElementById('invoiceTotal'),
-                    invoicePaymentMethod: document.getElementById('invoicePaymentMethod'),
-                    printInvoice: document.getElementById('printInvoice'),
-                    saveInvoice: document.getElementById('saveInvoice')
-                };
-                
-                // إعداد event listeners
-                this.setupEventListeners();
-            }
+        // دالة لتحميل بيانات الفاتورة من URL
+        function loadInvoiceData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const invoiceData = urlParams.get('data');
             
-            setupEventListeners() {
-                this.elements.closeInvoice.addEventListener('click', () => {
-                    this.hideInvoice();
-                });
-                
-                this.elements.printInvoice.addEventListener('click', () => {
-                    window.print();
-                });
-                
-                this.elements.saveInvoice.addEventListener('click', () => {
-                    this.saveInvoiceToFile();
-                });
+            if (invoiceData) {
+                try {
+                    const invoice = JSON.parse(decodeURIComponent(invoiceData));
+                    displayInvoice(invoice);
+                } catch (e) {
+                    console.error('خطأ في تحليل بيانات الفاتورة:', e);
+                    alert('حدث خطأ في تحميل الفاتورة');
+                }
             }
+        }
+        
+        // دالة لعرض بيانات الفاتورة
+        function displayInvoice(invoice) {
+            const date = new Date(invoice.date);
+            const dateStr = date.toLocaleDateString('ar-SA') + ' ' + 
+                            date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
             
-            createInvoice(product, finalPrice, paymentMethod, discountInfo = null) {
-                const now = new Date();
-                const invoiceId = 'INV-' + now.getFullYear() + (now.getMonth()+1).toString().padStart(2, '0') + 
-                                  now.getDate().toString().padStart(2, '0') + '-' + this.invoiceCounter.toString().padStart(4, '0');
-                
-                const invoice = {
-                    id: invoiceId,
-                    date: now.toISOString(),
-                    pharmacy: this.pharmacyName,
-                    product: product.name,
-                    originalPrice: product.price,
-                    finalPrice: finalPrice,
-                    paymentMethod: paymentMethod,
-                    discount: discountInfo
-                };
-                
-                this.invoices.push(invoice);
-                this.invoiceCounter++;
-                
-                return invoice;
-            }
+            document.getElementById('invoiceNumber').textContent = invoice.id;
+            document.getElementById('invoiceDate').textContent = dateStr;
+            document.getElementById('invoiceProduct').textContent = invoice.product;
+            document.getElementById('invoiceOriginalPrice').textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
+            document.getElementById('invoiceTotal').textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
             
-            showInvoice(invoice) {
-                const date = new Date(invoice.date);
-                const dateStr = date.toLocaleDateString('ar-SA') + ' ' + 
-                                date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+            let paymentMethodText = 'نقداً';
+            if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
+            else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
+            document.getElementById('invoicePaymentMethod').textContent = paymentMethodText;
+            
+            if (invoice.discount) {
+                document.getElementById('invoiceDiscountRow').style.display = 'flex';
+                document.getElementById('invoiceReasonRow').style.display = 'flex';
                 
-                this.elements.invoiceNumber.textContent = invoice.id;
-                this.elements.invoiceDate.textContent = dateStr;
-                this.elements.invoicePharmacy.textContent = invoice.pharmacy;
-                this.elements.invoiceProduct.textContent = invoice.product;
-                this.elements.invoiceOriginalPrice.textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
-                this.elements.invoiceTotal.textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
-                
-                let paymentMethodText = 'نقداً';
-                if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
-                else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
-                this.elements.invoicePaymentMethod.textContent = paymentMethodText;
-                
-                if (invoice.discount) {
-                    this.elements.invoiceDiscountRow.style.display = 'flex';
-                    this.elements.invoiceReasonRow.style.display = 'flex';
-                    
-                    const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
-                    if (invoice.discount.type === 'percent') {
-                        this.elements.invoiceDiscount.textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
-                    } else {
-                        this.elements.invoiceDiscount.textContent = `${discountValue} ر.س`;
-                    }
-                    
-                    this.elements.invoiceReason.textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
+                const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
+                if (invoice.discount.type === 'percent') {
+                    document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
                 } else {
-                    this.elements.invoiceDiscountRow.style.display = 'none';
-                    this.elements.invoiceReasonRow.style.display = 'none';
+                    document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س`;
                 }
                 
-                this.elements.invoiceModal.style.display = 'flex';
-            }
-            
-            hideInvoice() {
-                this.elements.invoiceModal.style.display = 'none';
-            }
-            
-            saveInvoiceToFile() {
-                if (this.invoices.length === 0) return;
-                
-                const lastInvoice = this.invoices[this.invoices.length - 1];
-                const dataStr = JSON.stringify(lastInvoice, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                
-                const exportFileDefaultName = `فاتورة_${lastInvoice.id}.json`;
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-            }
-            
-            saveInvoiceToDatabase(invoice, database) {
-                const invoiceRef = database.ref('invoices').push();
-                return invoiceRef.set(invoice);
+                document.getElementById('invoiceReason').textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
             }
         }
-
-        // إنشاء وتصدير نسخة من نظام الفواتير
-        const invoiceSystem = new InvoiceSystem();
         
-        // تصدير الكلاس للاستخدام في الملف الرئيسي
-        if (typeof module !== 'undefined' && module.exports) {
-            module.exports = InvoiceSystem;
-        } else {
-            window.InvoiceSystem = InvoiceSystem;
-        }
-        // تصدير وظائف إضافية للوصول من الملف الرئيسي
-window.InvoiceSystem = InvoiceSystem;
-window.invoiceHelpers = {
-    showInvoice: function(invoice) {
-        invoiceSystem.showInvoice(invoice);
-    },
-    hideInvoice: function() {
-        invoiceSystem.hideInvoice();
-    }
-};
-        // جعل وظائف الفاتورة متاحة عالمياً
-window.invoiceAPI = {
-    show: function(invoice) {
-        // تحديث واجهة المستخدم بالبيانات الجديدة
-        document.getElementById('invoiceNumber').textContent = invoice.id;
-        document.getElementById('invoiceDate').textContent = new Date(invoice.date).toLocaleString('ar-SA');
-        document.getElementById('invoiceProduct').textContent = invoice.product;
-        document.getElementById('invoiceOriginalPrice').textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
-        document.getElementById('invoiceTotal').textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
+        // أحداث الأزرار
+        document.getElementById('printInvoice').addEventListener('click', function() {
+            window.print();
+        });
         
-        // طريقة الدفع
-        let paymentMethodText = 'نقداً';
-        if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
-        else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
-        document.getElementById('invoicePaymentMethod').textContent = paymentMethodText;
+        document.getElementById('closeInvoice').addEventListener('click', function() {
+            window.close();
+        });
         
-        // معالجة الخصم إن وجد
-        if (invoice.discount) {
-            document.getElementById('invoiceDiscountRow').style.display = 'flex';
-            document.getElementById('invoiceReasonRow').style.display = 'flex';
-            
-            const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
-            if (invoice.discount.type === 'percent') {
-                document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
-            } else {
-                document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س`;
-            }
-            
-            document.getElementById('invoiceReason').textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
-        } else {
-            document.getElementById('invoiceDiscountRow').style.display = 'none';
-            document.getElementById('invoiceReasonRow').style.display = 'none';
-        }
-        
-        // عرض الفاتورة
-        document.getElementById('invoiceModal').style.display = 'flex';
-    },
-    hide: function() {
-        document.getElementById('invoiceModal').style.display = 'none';
-    }
-};
-        // جعل النظام متاحاً للصفحة الرئيسية
-window.InvoiceSystem = InvoiceSystem;
-
-// واجهة مبسطة للاستدعاء من الصفحة الرئيسية
-window.showInvoice = function(invoiceData) {
-    const invoiceSystem = new InvoiceSystem();
-    invoiceSystem.showInvoice(invoiceData);
-};
+        // تحميل بيانات الفاتورة عند فتح الصفحة
+        window.addEventListener('DOMContentLoaded', loadInvoiceData);
     </script>
 </body>
 </html>
