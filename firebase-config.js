@@ -1,6 +1,6 @@
 // firebase-config.js
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, doc, getDocs, query, where, addDoc, runTransaction } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
@@ -19,21 +19,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-export { db, auth };
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-// المراجع الأساسية
-const db = firebase.firestore();
-const productsRef = db.collection("products");
-const salesRef = db.collection("sales");
-const inventoryRef = db.collection("inventory");
+// تعريف المراجع الأساسية
+const productsRef = collection(db, "products");
+const salesRef = collection(db, "sales");
 
 // دالة لإضافة منتج جديد
 async function addProduct(productData) {
   try {
-    const docRef = await productsRef.add(productData);
+    const docRef = await addDoc(productsRef, productData);
     return docRef.id;
   } catch (error) {
     console.error("Error adding product: ", error);
@@ -44,7 +37,9 @@ async function addProduct(productData) {
 // دالة للبحث عن منتج بواسطة الباركود
 async function getProductByBarcode(barcode) {
   try {
-    const snapshot = await productsRef.where("barcode", "==", barcode).get();
+    const q = query(productsRef, where("barcode", "==", barcode));
+    const snapshot = await getDocs(q);
+    
     if (snapshot.empty) return null;
     
     const product = snapshot.docs[0].data();
@@ -59,7 +54,7 @@ async function getProductByBarcode(barcode) {
 // دالة لتسجيل عملية بيع
 async function recordSale(saleData) {
   try {
-    const docRef = await salesRef.add(saleData);
+    const docRef = await addDoc(salesRef, saleData);
     
     // تحديث المخزون
     await updateInventory(saleData.productId, -saleData.quantity);
@@ -74,13 +69,13 @@ async function recordSale(saleData) {
 // دالة لتحديث المخزون
 async function updateInventory(productId, quantityChange) {
   try {
-    const productRef = productsRef.doc(productId);
-    await db.runTransaction(async (transaction) => {
-      const doc = await transaction.get(productRef);
-      if (!doc.exists) throw "Document does not exist!";
+    const productRef = doc(db, "products", productId);
+    await runTransaction(db, async (transaction) => {
+      const productDoc = await transaction.get(productRef);
+      if (!productDoc.exists()) throw "المنتج غير موجود!";
       
-      const newQuantity = doc.data().quantity + quantityChange;
-      if (newQuantity < 0) throw "Insufficient inventory!";
+      const newQuantity = productDoc.data().quantity + quantityChange;
+      if (newQuantity < 0) throw "لا يوجد مخزون كافي!";
       
       transaction.update(productRef, { quantity: newQuantity });
     });
@@ -90,9 +85,10 @@ async function updateInventory(productId, quantityChange) {
   }
 }
 
-// تصدير الدوال للاستخدام في ملفات أخرى
+// تصدير الدوال والمراجع
 export {
   db,
+  auth,
   productsRef,
   salesRef,
   addProduct,
