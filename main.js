@@ -11,4 +11,4 @@ function processSale(product, finalPrice, paymentMethod, discountInfo = null) {
     
     // ... أي معالجة إضافية بعد إنشاء الفاتورة
 }
-});
+
