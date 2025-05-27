@@ -875,28 +875,41 @@ function loadInvoiceSystem() {
         invoiceIframe.style.display = 'none';
         invoiceIframe.name = 'invoiceFrame';
         
+        elements.invoiceContainer.appendChild(invoiceIframe);
+
         invoiceIframe.onload = function() {
-            try {
-                // الانتظار لمدة قصيرة للتأكد من تحميل الكود بالكامل
-                setTimeout(() => {
-                    if (frames['invoiceFrame'] && frames['invoiceFrame'].InvoiceSystem) {
-                        const invoiceSystem = new frames['invoiceFrame'].InvoiceSystem();
-                        console.log('تم تحميل نظام الفواتير بنجاح');
-                        resolve(invoiceSystem);
-                    } else {
-                        reject(new Error('لم يتم العثور على نظام الفواتير'));
-                    }
-                }, 300);
-            } catch (error) {
-                reject(error);
-            }
+            // الانتظار لضمان تحميل الكود بالكامل
+            setTimeout(() => {
+                if (invoiceIframe.contentWindow && 
+                   (invoiceIframe.contentWindow.showInvoice || 
+                    invoiceIframe.contentWindow.InvoiceSystem)) {
+                    resolve({
+                        createInvoice: function(product, finalPrice, paymentMethod, discountInfo) {
+                            const now = new Date();
+                            return {
+                                id: 'INV-' + now.getFullYear() + (now.getMonth()+1).toString().padStart(2, '0') + 
+                                    now.getDate().toString().padStart(2, '0') + '-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'),
+                                date: now.toISOString(),
+                                product: product.name,
+                                originalPrice: product.price,
+                                finalPrice: finalPrice,
+                                paymentMethod: paymentMethod,
+                                discount: discountInfo
+                            };
+                        },
+                        saveInvoiceToDatabase: async function(invoice, db) {
+                            await db.ref('invoices/' + invoice.id).set(invoice);
+                        }
+                    });
+                } else {
+                    reject(new Error('وظائف الفاتورة غير متاحة'));
+                }
+            }, 300);
         };
-        
+
         invoiceIframe.onerror = function() {
             reject(new Error('فشل تحميل نظام الفواتير'));
         };
-        
-        elements.invoiceContainer.appendChild(invoiceIframe);
     });
 }
 
