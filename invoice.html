@@ -355,6 +355,47 @@ window.invoiceHelpers = {
         invoiceSystem.hideInvoice();
     }
 };
+        // جعل وظائف الفاتورة متاحة عالمياً
+window.invoiceAPI = {
+    show: function(invoice) {
+        // تحديث واجهة المستخدم بالبيانات الجديدة
+        document.getElementById('invoiceNumber').textContent = invoice.id;
+        document.getElementById('invoiceDate').textContent = new Date(invoice.date).toLocaleString('ar-SA');
+        document.getElementById('invoiceProduct').textContent = invoice.product;
+        document.getElementById('invoiceOriginalPrice').textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
+        document.getElementById('invoiceTotal').textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
+        
+        // طريقة الدفع
+        let paymentMethodText = 'نقداً';
+        if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
+        else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
+        document.getElementById('invoicePaymentMethod').textContent = paymentMethodText;
+        
+        // معالجة الخصم إن وجد
+        if (invoice.discount) {
+            document.getElementById('invoiceDiscountRow').style.display = 'flex';
+            document.getElementById('invoiceReasonRow').style.display = 'flex';
+            
+            const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
+            if (invoice.discount.type === 'percent') {
+                document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
+            } else {
+                document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س`;
+            }
+            
+            document.getElementById('invoiceReason').textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
+        } else {
+            document.getElementById('invoiceDiscountRow').style.display = 'none';
+            document.getElementById('invoiceReasonRow').style.display = 'none';
+        }
+        
+        // عرض الفاتورة
+        document.getElementById('invoiceModal').style.display = 'flex';
+    },
+    hide: function() {
+        document.getElementById('invoiceModal').style.display = 'none';
+    }
+};
     </script>
 </body>
 </html>
