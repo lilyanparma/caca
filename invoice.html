@@ -345,6 +345,16 @@
         } else {
             window.InvoiceSystem = InvoiceSystem;
         }
+        // تصدير وظائف إضافية للوصول من الملف الرئيسي
+window.InvoiceSystem = InvoiceSystem;
+window.invoiceHelpers = {
+    showInvoice: function(invoice) {
+        invoiceSystem.showInvoice(invoice);
+    },
+    hideInvoice: function() {
+        invoiceSystem.hideInvoice();
+    }
+};
     </script>
 </body>
 </html>
