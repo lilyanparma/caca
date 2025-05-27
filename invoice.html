@@ -396,6 +396,14 @@ window.invoiceAPI = {
         document.getElementById('invoiceModal').style.display = 'none';
     }
 };
+        // جعل النظام متاحاً للصفحة الرئيسية
+window.InvoiceSystem = InvoiceSystem;
+
+// واجهة مبسطة للاستدعاء من الصفحة الرئيسية
+window.showInvoice = function(invoiceData) {
+    const invoiceSystem = new InvoiceSystem();
+    invoiceSystem.showInvoice(invoiceData);
+};
     </script>
 </body>
 </html>
