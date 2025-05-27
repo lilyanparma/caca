@@ -1,0 +1,349 @@
+// invoice-system.js
+
+// ======== جزء CSS ========
+const invoiceStyles = `
+/* أنماط نافذة الفاتورة */
+.invoice-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    font-family: 'Tajawal', sans-serif;
+}
+
+.invoice-content {
+    background: white;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: scale(0.9);
+    animation: scaleUp 0.3s forwards;
+}
+
+@keyframes scaleUp {
+    to { transform: scale(1); }
+}
+
+.invoice-header {
+    background: linear-gradient(135deg, #4361ee, #3f37c9);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.invoice-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-invoice {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invoice-body {
+    padding: 20px;
+    direction: rtl;
+}
+
+.invoice-pharmacy {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #4361ee;
+}
+
+.invoice-details {
+    margin-bottom: 20px;
+}
+
+.invoice-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.invoice-row.total {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #4361ee;
+    border-bottom: none;
+    margin-top: 10px;
+}
+
+.invoice-footer {
+    text-align: center;
+    padding: 15px;
+    background: #f9f9f9;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.invoice-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.invoice-actions .btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.invoice-actions .btn-primary {
+    background: #4361ee;
+    color: white;
+}
+
+.invoice-actions .btn-success {
+    background: #2b9348;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .invoice-content {
+        width: 95%;
+    }
+    
+    .invoice-header h2 {
+        font-size: 1.3rem;
+    }
+}
+`;
+
+// ======== جزء HTML ========
+const invoiceHTML = `
+<div id="invoiceModal" class="invoice-modal">
+    <div class="invoice-content">
+        <div class="invoice-header">
+            <button id="closeInvoice" class="close-invoice">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2><i class="fas fa-receipt"></i> فاتورة بيع</h2>
+        </div>
+        <div class="invoice-body">
+            <div id="invoicePharmacy" class="invoice-pharmacy">صيدلية النخبة</div>
+            <div class="invoice-details">
+                <div class="invoice-row">
+                    <span>رقم الفاتورة:</span>
+                    <span id="invoiceNumber">#0001</span>
+                </div>
+                <div class="invoice-row">
+                    <span>التاريخ والوقت:</span>
+                    <span id="invoiceDate">01/01/2023 10:00 ص</span>
+                </div>
+                <div class="invoice-row">
+                    <span>المنتج:</span>
+                    <span id="invoiceProduct">اسم المنتج</span>
+                </div>
+                <div class="invoice-row">
+                    <span>السعر الأصلي:</span>
+                    <span id="invoiceOriginalPrice">50.00 ر.س</span>
+                </div>
+                <div class="invoice-row" id="invoiceDiscountRow" style="display: none;">
+                    <span>الخصم:</span>
+                    <span id="invoiceDiscount">0.00 ر.س (0%)</span>
+                </div>
+                <div class="invoice-row" id="invoiceReasonRow" style="display: none;">
+                    <span>سبب الخصم:</span>
+                    <span id="invoiceReason">لا يوجد</span>
+                </div>
+                <div class="invoice-row total">
+                    <span>المجموع:</span>
+                    <span id="invoiceTotal">50.00 ر.س</span>
+                </div>
+                <div class="invoice-row">
+                    <span>طريقة الدفع:</span>
+                    <span id="invoicePaymentMethod">نقداً</span>
+                </div>
+            </div>
+            <div class="invoice-actions">
+                <button id="printInvoice" class="btn btn-primary">
+                    <i class="fas fa-print"></i> طباعة
+                </button>
+                <button id="saveInvoice" class="btn btn-success">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+            </div>
+        </div>
+        <div class="invoice-footer">
+            شكراً لثقتكم بنا - للاستفسار: 0551234567
+        </div>
+    </div>
+</div>
+`;
+
+// ======== جزء JavaScript ========
+class InvoiceSystem {
+    constructor() {
+        this.invoices = [];
+        this.invoiceCounter = 1;
+        this.pharmacyName = "صيدلية النخبة";
+        
+        // تهيئة الأنماط والعناصر
+        this.initStyles();
+        this.initDOM();
+        this.initElements();
+        this.setupEventListeners();
+    }
+    
+    initStyles() {
+        const styleElement = document.createElement('style');
+        styleElement.innerHTML = invoiceStyles;
+        document.head.appendChild(styleElement);
+    }
+    
+    initDOM() {
+        const container = document.createElement('div');
+        container.innerHTML = invoiceHTML;
+        document.body.appendChild(container);
+    }
+    
+    initElements() {
+        this.elements = {
+            invoiceModal: document.getElementById('invoiceModal'),
+            closeInvoice: document.getElementById('closeInvoice'),
+            invoiceNumber: document.getElementById('invoiceNumber'),
+            invoiceDate: document.getElementById('invoiceDate'),
+            invoicePharmacy: document.getElementById('invoicePharmacy'),
+            invoiceProduct: document.getElementById('invoiceProduct'),
+            invoiceOriginalPrice: document.getElementById('invoiceOriginalPrice'),
+            invoiceDiscountRow: document.getElementById('invoiceDiscountRow'),
+            invoiceDiscount: document.getElementById('invoiceDiscount'),
+            invoiceReasonRow: document.getElementById('invoiceReasonRow'),
+            invoiceReason: document.getElementById('invoiceReason'),
+            invoiceTotal: document.getElementById('invoiceTotal'),
+            invoicePaymentMethod: document.getElementById('invoicePaymentMethod'),
+            printInvoice: document.getElementById('printInvoice'),
+            saveInvoice: document.getElementById('saveInvoice')
+        };
+    }
+    
+    setupEventListeners() {
+        this.elements.closeInvoice.addEventListener('click', () => this.closeModal());
+        this.elements.printInvoice.addEventListener('click', () => this.printInvoice());
+        this.elements.saveInvoice.addEventListener('click', () => this.saveInvoice());
+    }
+    
+    createInvoice(product, finalPrice, paymentMethod, discountInfo = null) {
+        const now = new Date();
+        const invoiceId = 'INV-' + now.getFullYear() + 
+                         (now.getMonth()+1).toString().padStart(2, '0') + 
+                         now.getDate().toString().padStart(2, '0') + '-' + 
+                         this.invoiceCounter.toString().padStart(4, '0');
+        
+        const invoice = {
+            id: invoiceId,
+            date: now.toISOString(),
+            pharmacy: this.pharmacyName,
+            product: product.name,
+            originalPrice: product.price,
+            finalPrice: finalPrice,
+            paymentMethod: paymentMethod,
+            discount: discountInfo,
+            timestamp: now.getTime()
+        };
+        
+        this.invoices.push(invoice);
+        this.invoiceCounter++;
+        
+        return invoice;
+    }
+    
+    showInvoice(invoice) {
+        const date = new Date(invoice.date);
+        const dateStr = date.toLocaleDateString('ar-SA') + ' ' + 
+                        date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+        
+        this.elements.invoiceNumber.textContent = invoice.id;
+        this.elements.invoiceDate.textContent = dateStr;
+        this.elements.invoicePharmacy.textContent = invoice.pharmacy;
+        this.elements.invoiceProduct.textContent = invoice.product;
+        this.elements.invoiceOriginalPrice.textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
+        this.elements.invoiceTotal.textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
+        
+        // طريقة الدفع
+        let paymentMethodText = 'نقداً';
+        if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
+        else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
+        this.elements.invoicePaymentMethod.textContent = paymentMethodText;
+        
+        // معلومات الخصم إن وجدت
+        if (invoice.discount) {
+            this.elements.invoiceDiscountRow.style.display = 'flex';
+            this.elements.invoiceReasonRow.style.display = 'flex';
+            
+            const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
+            if (invoice.discount.type === 'percent') {
+                this.elements.invoiceDiscount.textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
+            } else {
+                this.elements.invoiceDiscount.textContent = `${discountValue} ر.س`;
+            }
+            
+            this.elements.invoiceReason.textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
+        } else {
+            this.elements.invoiceDiscountRow.style.display = 'none';
+            this.elements.invoiceReasonRow.style.display = 'none';
+        }
+        
+        this.openModal();
+    }
+    
+    openModal() {
+        this.elements.invoiceModal.style.display = 'flex';
+    }
+    
+    closeModal() {
+        this.elements.invoiceModal.style.display = 'none';
+    }
+    
+    printInvoice() {
+        window.print();
+    }
+    
+    saveInvoice() {
+        if (this.invoices.length === 0) return;
+        
+        const lastInvoice = this.invoices[this.invoices.length - 1];
+        const dataStr = JSON.stringify(lastInvoice, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportFileDefaultName = `فاتورة_${lastInvoice.id}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+    }
+}
+
+// جعل النظام متاحاً للاستخدام من ملفات أخرى
+window.InvoiceSystem = InvoiceSystem;
