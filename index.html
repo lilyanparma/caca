@@ -564,7 +564,9 @@
         }
     </style>
 </head>
-    <script src="invoice-system.js"></script>
+    <!-- في نهاية body بعد جميع العناصر -->
+<script src="invoice-system.js"></script>
+<script src="main.js"></script>
 <body>
     <div class="container">
         <div class="header">
@@ -1053,50 +1055,6 @@
         
         // 12. إيقاف الكاميرا عند مغادرة الصفحة
         window.addEventListener('beforeunload', stopCamera);
-       
-      // تأكد من أن نظام الفواتير متاح قبل استخدامه
-document.addEventListener('DOMContentLoaded', function() {
-    // تهيئة نظام الفواتير
-    window.invoiceSystem = new InvoiceSystem();
-    
-    // تعديل دالة البيع
-    elements.sellBtn.addEventListener('click', function() {
-        if (!currentProduct) {
-            showToast('لم يتم اختيار منتج', 'error');
-            return;
-        }
-        
-        const finalPrice = parseFloat(elements.finalPriceValue.textContent);
-        const discountApplied = finalPrice < currentProduct.price;
-        let discountInfo = null;
-        
-        if (discountApplied) {
-            const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
-            const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
-            
-            discountInfo = {
-                type: discountType,
-                value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
-                reason: reason
-            };
-        }
-        
-        // إنشاء وعرض الفاتورة
-        const invoice = window.invoiceSystem.createInvoice(
-            currentProduct,
-            finalPrice,
-            paymentMethod,
-            discountInfo
-        );
-        
-        window.invoiceSystem.showInvoice(invoice);
-        
-        // إعادة تعيين النظام
-        resetSystem();
-    });  
-    
-    });
-    
     </script>
 </body>
 </html>
