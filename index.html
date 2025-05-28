@@ -802,6 +802,8 @@
 
     <!-- تنبيهات النظام -->
     <div id="toast" class="toast"></div>
+    <!-- مكان لعرض الفاتورة -->
+<div id="invoicePlaceholder" style="display:none;"></div>
     
     <script>
         // 1. تهيئة Firebase
@@ -1164,20 +1166,42 @@
             return invoice;
         }
         
-        // 12. عرض الفاتورة في صفحة منفصلة
-        function showInvoice(invoice) {
-            // تحويل بيانات الفاتورة إلى JSON
-            const invoiceData = encodeURIComponent(JSON.stringify(invoice));
-            
-            // فتح نافذة جديدة مع بيانات الفاتورة
-            const invoiceWindow = window.open(`invoice.html?data=${invoiceData}`, '_blank', 
-                'width=600,height=800,scrollbars=yes,resizable=yes');
-            
-            // التركيز على النافذة الجديدة
-            if (invoiceWindow) {
-                invoiceWindow.focus();
-            }
-        }
+function showInvoice(invoice) {
+    // إنشاء iframe لعرض الفاتورة
+    const iframe = document.createElement('iframe');
+    iframe.id = 'invoiceFrame';
+    iframe.style.width = '100%';
+    iframe.style.height = '600px';
+    iframe.style.border = 'none';
+    iframe.style.marginTop = '20px';
+    iframe.style.borderRadius = '15px';
+    iframe.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+    
+    // إضافة الـ iframe إلى الصفحة
+    const placeholder = document.getElementById('invoicePlaceholder');
+    placeholder.innerHTML = '';
+    placeholder.appendChild(iframe);
+    placeholder.style.display = 'block';
+    
+    // إخفاء الأقسام الأخرى
+    document.getElementById('productDetails').style.display = 'none';
+    document.getElementById('searchWrapper').style.display = 'none';
+    
+    // تحميل الفاتورة في الـ iframe
+    const invoiceData = encodeURIComponent(JSON.stringify(invoice));
+    iframe.src = `invoice.html?data=${invoiceData}`;
+    
+    // إضافة زر العودة
+    const backButton = document.createElement('button');
+    backButton.className = 'btn btn-success';
+    backButton.style.marginTop = '15px';
+    backButton.innerHTML = '<i class="fas fa-undo-alt"></i> العودة للبيع';
+    backButton.onclick = function() {
+        placeholder.style.display = 'none';
+        resetSystem();
+    };
+    placeholder.appendChild(backButton);
+}
         
         // 13. حفظ الفاتورة في قاعدة البيانات
         function saveInvoiceToDatabase(invoice) {
