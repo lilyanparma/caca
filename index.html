@@ -1315,6 +1315,13 @@ function showInvoice(invoice) {
                 }, 500);
             }, duration);
         }
+        // استقبال رسالة من الفاتورة للإغلاق
+window.addEventListener('message', function(e) {
+    if (e.data === 'closeInvoice') {
+        document.getElementById('invoicePlaceholder').style.display = 'none';
+        resetSystem();
+    }
+});
         
         // 17. إيقاف الكاميرا عند مغادرة الصفحة
         window.addEventListener('beforeunload', stopCamera);
