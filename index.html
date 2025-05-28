@@ -663,38 +663,47 @@
         padding: 0 10px;
     }
     
-    /* تعديلات شريط البحث */
+@media (max-width: 576px) {
+    /* تعديلات شريط البحث - الإصلاح الجديد */
     .search-toggle {
         padding: 10px 15px;
         font-size: 0.9rem;
-        width: 100%;
-        max-width: 300px;
-        margin: 0 auto;
+        width: 90%; /* بدل max-width */
+        margin: 0 auto 10px; /* إضافة هامش سفلي */
     }
     
     .search-wrapper {
-        width: 95%;
-        max-width: 350px;
-        margin: 0 auto;
+        width: 90%; /* بدل max-width */
+        margin: 0 auto 10px;
+        flex-direction: column; /* تغيير اتجاه العناصر */
     }
     
     .search-input {
         padding: 12px 15px;
         font-size: 0.9rem;
+        width: 100%; /* ملء العرض المتاح */
     }
     
     #cameraBtn {
-        padding: 12px 15px;
+        padding: 12px;
         font-size: 0.9rem;
-        min-width: unset;
+        width: 100%; /* جعل الزر يأخذ كامل العرض */
+        border-radius: 0 0 50px 50px !important; /* تعديل الزوايا */
+    }
+    
+    /* إظهار زر الكاميرا دائمًا */
+    .search-actions {
+        width: 100%;
+        display: block !important;
     }
     
     /* تعديلات الكاميرا */
     #cameraScanner {
         max-height: 250px;
-        margin: 15px auto;
+        margin: 10px auto;
         width: 95%;
     }
+}
     
     .scanner-frame {
         width: 85%;
