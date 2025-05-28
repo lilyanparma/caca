@@ -651,6 +651,91 @@
             .confirmation-modal {
                 padding: 20px 15px;
             }
+
+/* تعديلات خاصة للهواتف المحمولة (عرض أقل من 576px) */
+@media (max-width: 576px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .header h1 {
+        font-size: 1.5rem;
+        padding: 0 10px;
+    }
+    
+    /* تعديلات شريط البحث */
+    .search-toggle {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .search-wrapper {
+        width: 95%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    
+    .search-input {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+    
+    #cameraBtn {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+        min-width: unset;
+    }
+    
+    /* تعديلات الكاميرا */
+    #cameraScanner {
+        max-height: 250px;
+        margin: 15px auto;
+        width: 95%;
+    }
+    
+    .scanner-frame {
+        width: 85%;
+        height: 120px;
+    }
+    
+    .scanner-instruction {
+        font-size: 0.9rem;
+    }
+    
+    .scanner-instruction i {
+        font-size: 2rem !important;
+    }
+    
+    /* تحسينات عامة للأزرار */
+    .btn {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+/* تعديلات إضافية للشاشات الصغيرة جدًا */
+@media (max-width: 400px) {
+    .header h1 {
+        font-size: 1.3rem;
+    }
+    
+    .search-toggle {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+    
+    #cameraScanner {
+        max-height: 200px;
+    }
+    
+    .scanner-frame {
+        height: 100px;
+    }
+}
+            
         }
     </style>
 </head>
