@@ -510,7 +510,6 @@
             animation: slideInRight 0.5s cubic-bezier(0.22, 1, 0.36, 1);
             border-left: 6px solid white;
             max-width: 400px;
-            backdrop-filter: blur(5px);
         }
         
         @keyframes slideInRight {
@@ -624,12 +623,6 @@
         /* مكان لعرض الفاتورة */
         #invoicePlaceholder {
             display: none;
-            width: 100%;
-            padding: 20px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            margin-top: 30px;
         }
         
         /* التكيف مع الشاشات الصغيرة */
@@ -1249,8 +1242,6 @@
             iframe.style.height = '600px';
             iframe.style.border = 'none';
             iframe.style.marginTop = '20px';
-            iframe.style.borderRadius = '15px';
-            iframe.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
             
             // إضافة الـ iframe إلى الصفحة
             elements.invoicePlaceholder.innerHTML = '';
