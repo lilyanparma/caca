@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -653,185 +654,284 @@
                 padding: 20px 15px;
             }
             
-/* أنماط الحاوية ثلاثية الأبعاد الجديدة */
-.three-d-header {
-    perspective: 1000px;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.three-d-text {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #fff;
-    display: inline-block;
-    padding: 20px 40px;
-    border-radius: 15px;
+.elegant-header {
     background: linear-gradient(135deg, #4361ee, #3a0ca3);
-    transform-style: preserve-3d;
-    transform: rotateX(15deg) rotateY(-10deg);
-    box-shadow: 
-        0 10px 20px rgba(0,0,0,0.2),
-        0 0 0 5px rgba(255,255,255,0.1) inset,
-        0 -5px 0 0 rgba(0,0,0,0.2) inset;
-    position: relative;
-    transition: all 0.3s ease;
-    animation: float 3s ease-in-out infinite;
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15),
+                0 2px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.three-d-text::before {
+.header-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    position: relative;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    color: white;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transform: rotate(-10deg);
+    transition: transform 0.3s ease;
+}
+
+.logo-wrapper:hover .logo-icon {
+    transform: rotate(0deg) scale(1.1);
+}
+
+.elegant-header h1 {
+    margin: 0;
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    padding: 5px 0;
+}
+
+.elegant-header h1::after {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
-    pointer-events: none;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 3px;
+    transition: width 0.3s ease;
 }
 
-.three-d-text:hover {
-    transform: rotateX(10deg) rotateY(-5deg) scale(1.05);
-    box-shadow: 
-        0 15px 30px rgba(0,0,0,0.3),
-        0 0 0 5px rgba(255,255,255,0.1) inset,
-        0 -5px 0 0 rgba(0,0,0,0.2) inset;
-}
-
-@keyframes float {
-    0%, 100% { transform: rotateX(15deg) rotateY(-10deg) translateY(0); }
-    50% { transform: rotateX(15deg) rotateY(-10deg) translateY(-10px); }
+.logo-wrapper:hover h1::after {
+    width: 100%;
 }
 
 @media (max-width: 768px) {
-    .three-d-text {
-        font-size: 1.8rem;
-        padding: 15px 25px;
+    .elegant-header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+    
+    .logo-wrapper {
+        gap: 10px;
     }
 }
 
-        /* أنماط الرأس ثلاثي الأبعاد */
-        .header {
-            padding: 5px 0 10px;
-            position: relative;
-            background: #f0f2f5;
-            z-index: 10;
-        }
-        
-        .three-d-container {
-            perspective: 1200px;
-            text-align: center;
-            margin: 0 auto;
-            width: 100%;
-            padding: 0 20px;
-        }
-        
-        .three-d-text {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #fff;
-            display: inline-block;
-            padding: 15px 35px;
-            border-radius: 15px;
-            background: linear-gradient(145deg, var(--primary), var(--secondary));
-            transform-style: preserve-3d;
-            transform: rotateX(15deg) rotateY(-5deg);
-            box-shadow: 
-                0 15px 30px rgba(0,0,0,0.2),
-                0 5px 15px rgba(0,0,0,0.1),
-                0 0 0 4px rgba(255,255,255,0.1) inset,
-                0 -8px 0 0 rgba(0,0,0,0.2) inset;
-            position: relative;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: float 4s ease-in-out infinite;
-            margin-top: 5px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        
-        .three-d-text::before {
-            content: '';
-            position: absolute;
-            top: 4px;
-            left: 4px;
-            right: 4px;
-            bottom: 4px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .three-d-text::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 15px;
-            background: linear-gradient(135deg, transparent, rgba(0,0,0,0.1));
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .three-d-text:hover {
-            transform: rotateX(12deg) rotateY(-3deg) scale(1.03);
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.25),
-                0 8px 20px rgba(0,0,0,0.15),
-                0 0 0 4px rgba(255,255,255,0.1) inset,
-                0 -10px 0 0 rgba(0,0,0,0.25) inset;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: rotateX(15deg) rotateY(-5deg) translateY(0); }
-            50% { transform: rotateX(15deg) rotateY(-5deg) translateY(-10px); }
-        }
-        
-        /* باقي الأنماط الخاصة بالصفحة */
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 15px;
-        }
-        
-        /* ... (بقية أنماط الصفحة الأصلية تبقى كما هي) ... */
-        
-        @media (max-width: 768px) {
-            .three-d-text {
-                font-size: 1.8rem;
-                padding: 12px 25px;
-                transform: rotateX(10deg) rotateY(-3deg);
-            }
-            
-            @keyframes float {
-                0%, 100% { transform: rotateX(10deg) rotateY(-3deg) translateY(0); }
-                50% { transform: rotateX(10deg) rotateY(-3deg) translateY(-8px); }
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .three-d-text {
-                font-size: 1.5rem;
-                padding: 10px 20px;
-            }
-        }
+/* أنماط الرأس */
+.elegant-header {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    padding: 10px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15),
+                0 2px 10px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.header-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    position: relative;
+}
+
+.logo-icon {
+    font-size: 1.8rem;
+    color: white;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transform: rotate(-10deg);
+    transition: transform 0.3s ease;
+}
+
+.logo-wrapper:hover .logo-icon {
+    transform: rotate(0deg) scale(1.1);
+}
+
+.elegant-header h1 {
+    margin: 0;
+    color: white;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    padding: 5px 0;
+}
+
+/* أنماط حقل البحث */
+.search-section {
+    background: #f8f9fa;
+    padding: 20px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.search-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.search-controls {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.search-toggle {
+    background: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    cursor: pointer;
+    font-weight: 700;
+    color: #4361ee;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    border: 1px solid #e0e0e0;
+}
+
+.search-wrapper {
+    display: none;
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 20px;
+    border: none;
+    font-size: 1rem;
+    background: transparent;
+}
+
+.search-actions .btn {
+    border-radius: 0 12px 12px 0;
+    padding: 12px 20px;
+}
+
+/* تعديلات للجوال */
+@media (max-width: 768px) {
+    /* تعديلات الرأس */
+    .elegant-header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .logo-icon {
+        font-size: 1.5rem;
+    }
+    
+    .logo-wrapper {
+        gap: 10px;
+    }
+    
+    /* تعديلات حقل البحث */
+    .search-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .search-wrapper {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .search-wrapper.active {
+        display: flex;
+    }
+    
+    .search-input {
+        border-radius: 12px 12px 0 0;
+        text-align: center;
+    }
+    
+    .search-actions .btn {
+        border-radius: 0 0 12px 12px;
+        width: 100%;
+    }
+}
+
+
+/* تأكيد على أنماط العرض الأساسية */
+.search-wrapper {
+    display: none; /* مخفي بشكل افتراضي */
+}
+
+@media (max-width: 768px) {
+    .search-wrapper {
+        display: none;
+        flex-direction: column;
+    }
+    
+    .search-wrapper.active {
+        display: flex; /* يظهر فقط عند وجود class 'active' */
+    }
+}
+
+@media (min-width: 769px) {
+    .search-wrapper {
+        display: none;
+        flex-direction: row;
+    }
+}
+
             
         }
     </style>
 </head>
 <body>
-   <div class="container">
-        <div class="header">
-            <div class="three-d-container">
-                <div class="three-d-text">
-                    <i class="fas fa-cash-register"></i> نظام البيع الذكي
-                </div>
-            </div>
-        </div>        
-        <div class="search-container">
+<!-- رأس الصفحة المعدل -->
+<!-- رأس الصفحة المعدل -->
+<div class="elegant-header">
+    <div class="header-content">
+        <div class="logo-wrapper">
+            <i class="fas fa-cash-register logo-icon"></i>
+            <h1>نظام البيع الذكي</h1>
+        </div>
+    </div>
+</div>
+
+<!-- حقل البحث المعدل -->
+<div class="search-section">
+    <div class="search-container">
+        <div class="search-controls">
             <button id="searchToggle" class="search-toggle">
                 <i class="fas fa-search"></i> بحث عن منتج
             </button>
@@ -845,14 +945,14 @@
                     autocomplete="off"
                 >
                 <div class="search-actions">
-                    <button id="cameraBtn" class="btn btn-primary" style="border-radius: 0 50px 50px 0;">
+                    <button id="cameraBtn" class="btn btn-primary">
                         <i class="fas fa-camera"></i> مسح
                     </button>
                 </div>
             </div>
         </div>
-        
-        <div id="cameraScanner">
+    </div>
+</div>        <div id="cameraScanner">
             <video muted playsinline></video>
             <div class="scanner-overlay">
                 <div class="scanner-frame"></div>
@@ -949,7 +1049,7 @@
                 </button>
             </div>
         </div>
-    </div>
+    
     
     <!-- نافذة تأكيد الإرجاع -->
     <div id="returnConfirmModal" class="modal-overlay">
@@ -1045,11 +1145,21 @@
                 searchProduct();
             }
         });
-        
         function toggleSearch() {
             elements.searchWrapper.style.display = elements.searchWrapper.style.display === 'flex' ? 'none' : 'flex';
             if (elements.searchWrapper.style.display === 'flex') {
                 elements.barcodeInput.focus();
+            }
+        }
+        
+        // 5. التحكم في كاميرا الباركود
+        elements.cameraBtn.addEventListener('click', toggleCamera);
+        
+        async function toggleCamera() {
+            if (cameraActive) {
+                await stopCamera();
+            } else {
+                await startCamera();
             }
         }
         
