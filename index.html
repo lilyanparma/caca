@@ -13,7 +13,6 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-    <script src="invoice.js" defer></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -801,14 +800,8 @@
         <p id="returnSuccessText"></p>
     </div>
 
-
     <!-- تنبيهات النظام -->
     <div id="toast" class="toast"></div>
-    
-    <div id="invoiceContainer" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-    background: rgba(0,0,0,0.7); z-index: 2000; display: none; 
-    justify-content: center; align-items: center;">
-</div>
     
     <script>
         // 1. تهيئة Firebase
@@ -1103,47 +1096,51 @@
             elements.cardPayment.classList.remove('active');
         });
         
-       elements.sellBtn.addEventListener('click', function() {
-    if (!currentProduct) return;
-    
-    const finalPrice = parseFloat(elements.finalPriceValue.textContent);
-    const basePrice = currentProduct.price;
-    let discountInfo = null;
-    
-    if (finalPrice < basePrice) {
-        const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
-        const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
-        
-        discountInfo = {
-            type: discountType,
-            value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
-            reason: reason
-        };
-    }
-    
-    // تحديث المخزون في قاعدة البيانات
-    const newQuantity = currentProduct.quantity - 1;
-    
-    database.ref('products/' + currentProduct.barcode).update({
-        quantity: newQuantity
-    })
-    .then(() => {
-        // إنشاء وعرض الفاتورة
-        const invoice = invoiceSystem.createInvoice(currentProduct, finalPrice, paymentMethod, discountInfo);
-        invoiceSystem.displayInvoice(invoice, document.getElementById('invoiceContainer'));
-        document.getElementById('invoiceContainer').style.display = 'flex';
-        
-        // حفظ الفاتورة في قاعدة البيانات
-        invoiceSystem.saveToDatabase(invoice, database);
-        
-        // إعادة تعيين النظام
-        resetSystem();
-    })
-    .catch((error) => {
-        console.error('خطأ في تحديث المخزون:', error);
-        showToast('حدث خطأ أثناء تحديث المخزون', 'error');
-    });
-});
+        // 10. عملية البيع مع تحديث المخزون في Firebase
+        elements.sellBtn.addEventListener('click', function() {
+            if (!currentProduct) return;
+            
+            const finalPrice = parseFloat(elements.finalPriceValue.textContent);
+            const basePrice = currentProduct.price;
+            const discountApplied = finalPrice < basePrice;
+            let discountInfo = null;
+            
+            if (discountApplied) {
+                const discountValue = (basePrice - finalPrice).toFixed(2);
+                const discountType = elements.percentDiscountBtn.classList.contains('active') ? 'percent' : 'fixed';
+                const reason = elements.reasonInput.value.trim() || 'لا يوجد سبب مذكور';
+                
+                discountInfo = {
+                    type: discountType,
+                    value: discountType === 'percent' ? elements.discountPercent.value : elements.discountAmount.value,
+                    reason: reason
+                };
+            }
+            
+            // تحديث المخزون في قاعدة البيانات
+            const newQuantity = currentProduct.quantity - 1;
+            
+            database.ref('products/' + currentProduct.barcode).update({
+                quantity: newQuantity
+            })
+            .then(() => {
+                // إنشاء الفاتورة
+                const invoice = createInvoice(currentProduct, finalPrice, paymentMethod, discountInfo);
+                
+                // حفظ الفاتورة في قاعدة البيانات
+                saveInvoiceToDatabase(invoice);
+                
+                // عرض الفاتورة في صفحة منفصلة
+                showInvoice(invoice);
+                
+                // إعادة تعيين النظام
+                resetSystem();
+            })
+            .catch((error) => {
+                console.error('خطأ في تحديث المخزون:', error);
+                showToast('حدث خطأ أثناء تحديث المخزون', 'error');
+            });
+        });
         
         // 11. وظيفة إنشاء الفاتورة
         function createInvoice(product, finalPrice, paymentMethod, discountInfo = null) {
