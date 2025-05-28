@@ -1,5 +1,3 @@
-// invoice.js
-
 class InvoiceSystem {
     constructor() {
         this.invoiceCounter = 1;
@@ -8,8 +6,10 @@ class InvoiceSystem {
 
     createInvoice(product, finalPrice, paymentMethod, discountInfo = null) {
         const now = new Date();
-        const invoiceId = 'INV-' + now.getFullYear() + (now.getMonth()+1).toString().padStart(2, '0') + 
-                          now.getDate().toString().padStart(2, '0') + '-' + this.invoiceCounter.toString().padStart(4, '0');
+        const invoiceId = 'INV-' + now.getFullYear() + 
+                         (now.getMonth()+1).toString().padStart(2, '0') + 
+                         now.getDate().toString().padStart(2, '0') + '-' + 
+                         this.invoiceCounter.toString().padStart(4, '0');
         
         const invoice = {
             id: invoiceId,
@@ -28,11 +28,20 @@ class InvoiceSystem {
 
     displayInvoice(invoice, container) {
         const date = new Date(invoice.date);
-        const dateStr = date.toLocaleDateString('ar-SA') + ' ' + 
-                        date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+        const options = { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            numberingSystem: 'arab'
+        };
         
+        const dateStr = date.toLocaleDateString('ar-SA', options);
+        const paymentMethodText = this.getPaymentMethodText(invoice.paymentMethod);
+
         container.innerHTML = `
-            <div class="invoice-content">
+            <div class="invoice-content" dir="rtl">
                 <div class="invoice-header">
                     <h2><i class="fas fa-receipt"></i> فاتورة بيع</h2>
                 </div>
@@ -72,7 +81,7 @@ class InvoiceSystem {
                         </div>
                         <div class="invoice-row">
                             <span>طريقة الدفع:</span>
-                            <span>${this.getPaymentMethodText(invoice.paymentMethod)}</span>
+                            <span>${paymentMethodText}</span>
                         </div>
                     </div>
                     <div class="invoice-actions">
@@ -90,27 +99,35 @@ class InvoiceSystem {
             </div>
         `;
 
-        // إضافة أحداث الأزرار
-        container.querySelector('#printInvoice').addEventListener('click', () => window.print());
+        container.style.display = 'flex';
+        
+        container.querySelector('#printInvoice').addEventListener('click', () => {
+            window.print();
+        });
+        
         container.querySelector('#closeInvoice').addEventListener('click', () => {
             container.style.display = 'none';
         });
     }
 
     getPaymentMethodText(method) {
-        const methods = {
+        return {
             'cash': 'نقداً',
             'card': 'بطاقة بنكية',
             'transfer': 'تحويل بنكي'
-        };
-        return methods[method] || 'نقداً';
+        }[method] || 'نقداً';
     }
 
-    saveToDatabase(invoice, database) {
-        const invoiceRef = database.ref('invoices').push();
-        return invoiceRef.set(invoice);
+    async saveToDatabase(invoice, database) {
+        try {
+            const invoiceRef = database.ref('invoices').push();
+            await invoiceRef.set(invoice);
+            console.log('تم حفظ الفاتورة بنجاح');
+        } catch (error) {
+            console.error('خطأ في حفظ الفاتورة:', error);
+            throw error;
+        }
     }
 }
 
-// إنشاء نسخة وحيدة من النظام
 const invoiceSystem = new InvoiceSystem();
