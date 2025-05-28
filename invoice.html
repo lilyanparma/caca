@@ -187,66 +187,84 @@
         </div>
     </div>
 
-    <script>
-        // دالة لتحميل بيانات الفاتورة من URL
-        function loadInvoiceData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const invoiceData = urlParams.get('data');
-            
-            if (invoiceData) {
-                try {
-                    const invoice = JSON.parse(decodeURIComponent(invoiceData));
-                    displayInvoice(invoice);
-                } catch (e) {
-                    console.error('خطأ في تحليل بيانات الفاتورة:', e);
-                    alert('حدث خطأ في تحميل الفاتورة');
-                }
+<script>
+    // دالة لتحميل بيانات الفاتورة من URL
+    function loadInvoiceData() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const invoiceData = urlParams.get('data');
+        
+        if (invoiceData) {
+            try {
+                const invoice = JSON.parse(decodeURIComponent(invoiceData));
+                displayInvoice(invoice);
+            } catch (e) {
+                console.error('خطأ في تحليل بيانات الفاتورة:', e);
+                alert('حدث خطأ في تحميل الفاتورة');
             }
         }
+    }
+
+    // دالة لعرض بيانات الفاتورة
+    function displayInvoice(invoice) {
+        const date = new Date(invoice.date);
+        const dateStr = date.toLocaleDateString('ar-SA') + ' ' + 
+                        date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
         
-        // دالة لعرض بيانات الفاتورة
-        function displayInvoice(invoice) {
-            const date = new Date(invoice.date);
-            const dateStr = date.toLocaleDateString('ar-SA') + ' ' + 
-                            date.toLocaleTimeString('ar-SA', {hour: '2-digit', minute:'2-digit'});
+        document.getElementById('invoiceNumber').textContent = invoice.id;
+        document.getElementById('invoiceDate').textContent = dateStr;
+        document.getElementById('invoiceProduct').textContent = invoice.product;
+        document.getElementById('invoiceOriginalPrice').textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
+        document.getElementById('invoiceTotal').textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
+        
+        let paymentMethodText = 'نقداً';
+        if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
+        else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
+        document.getElementById('invoicePaymentMethod').textContent = paymentMethodText;
+        
+        if (invoice.discount) {
+            document.getElementById('invoiceDiscountRow').style.display = 'flex';
+            document.getElementById('invoiceReasonRow').style.display = 'flex';
             
-            document.getElementById('invoiceNumber').textContent = invoice.id;
-            document.getElementById('invoiceDate').textContent = dateStr;
-            document.getElementById('invoiceProduct').textContent = invoice.product;
-            document.getElementById('invoiceOriginalPrice').textContent = invoice.originalPrice.toFixed(2) + ' ر.س';
-            document.getElementById('invoiceTotal').textContent = invoice.finalPrice.toFixed(2) + ' ر.س';
-            
-            let paymentMethodText = 'نقداً';
-            if (invoice.paymentMethod === 'card') paymentMethodText = 'بطاقة بنكية';
-            else if (invoice.paymentMethod === 'transfer') paymentMethodText = 'تحويل بنكي';
-            document.getElementById('invoicePaymentMethod').textContent = paymentMethodText;
-            
-            if (invoice.discount) {
-                document.getElementById('invoiceDiscountRow').style.display = 'flex';
-                document.getElementById('invoiceReasonRow').style.display = 'flex';
-                
-                const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
-                if (invoice.discount.type === 'percent') {
-                    document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
-                } else {
-                    document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س`;
-                }
-                
-                document.getElementById('invoiceReason').textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
+            const discountValue = (invoice.originalPrice - invoice.finalPrice).toFixed(2);
+            if (invoice.discount.type === 'percent') {
+                document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س (${invoice.discount.value}%)`;
+            } else {
+                document.getElementById('invoiceDiscount').textContent = `${discountValue} ر.س`;
             }
+            
+            document.getElementById('invoiceReason').textContent = invoice.discount.reason || 'لا يوجد سبب مذكور';
         }
-        
-        // أحداث الأزرار
-        document.getElementById('printInvoice').addEventListener('click', function() {
-            window.print();
-        });
-        
-        document.getElementById('closeInvoice').addEventListener('click', function() {
+    }
+
+    // دالة للتحقق إذا كانت الصفحة معروضة داخل iframe
+    function isInIframe() {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    }
+
+    // دالة للتعامل مع زر الإغلاق
+    function handleClose() {
+        if (isInIframe()) {
+            // إذا كانت معروضة داخل iframe، نرسل رسالة للصفحة الأم
+            parent.postMessage('closeInvoice', '*');
+        } else {
+            // إذا كانت في نافذة منفصلة، نغلق النافذة
             window.close();
-        });
-        
-        // تحميل بيانات الفاتورة عند فتح الصفحة
-        window.addEventListener('DOMContentLoaded', loadInvoiceData);
-    </script>
+        }
+    }
+
+    // أحداث الأزرار
+    document.getElementById('printInvoice').addEventListener('click', function() {
+        window.print();
+    });
+    
+    document.getElementById('closeInvoice').addEventListener('click', handleClose);
+
+    // تحميل بيانات الفاتورة عند فتح الصفحة
+    window.addEventListener('DOMContentLoaded', loadInvoiceData);
+</script>
 </body>
 </html>
