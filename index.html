@@ -652,14 +652,76 @@
             .confirmation-modal {
                 padding: 20px 15px;
             }
+            
+/* أنماط الحاوية ثلاثية الأبعاد الجديدة */
+.three-d-header {
+    perspective: 1000px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.three-d-text {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #fff;
+    display: inline-block;
+    padding: 20px 40px;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+    transform-style: preserve-3d;
+    transform: rotateX(15deg) rotateY(-10deg);
+    box-shadow: 
+        0 10px 20px rgba(0,0,0,0.2),
+        0 0 0 5px rgba(255,255,255,0.1) inset,
+        0 -5px 0 0 rgba(0,0,0,0.2) inset;
+    position: relative;
+    transition: all 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+}
+
+.three-d-text::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    pointer-events: none;
+}
+
+.three-d-text:hover {
+    transform: rotateX(10deg) rotateY(-5deg) scale(1.05);
+    box-shadow: 
+        0 15px 30px rgba(0,0,0,0.3),
+        0 0 0 5px rgba(255,255,255,0.1) inset,
+        0 -5px 0 0 rgba(0,0,0,0.2) inset;
+}
+
+@keyframes float {
+    0%, 100% { transform: rotateX(15deg) rotateY(-10deg) translateY(0); }
+    50% { transform: rotateX(15deg) rotateY(-10deg) translateY(-10px); }
+}
+
+@media (max-width: 768px) {
+    .three-d-text {
+        font-size: 1.8rem;
+        padding: 15px 25px;
+    }
+}
+            
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-cash-register"></i> نظام البيع الذكي</h1>
+  <div class="header">
+    <div class="three-d-header">
+        <div class="three-d-text">
+            <i class="fas fa-cash-register"></i> نظام البيع الذكي
         </div>
+    </div>
+</div>
         
         <div class="search-container">
             <button id="searchToggle" class="search-toggle">
