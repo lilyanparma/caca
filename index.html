@@ -801,8 +801,14 @@
         <p id="returnSuccessText"></p>
     </div>
 
+
     <!-- تنبيهات النظام -->
     <div id="toast" class="toast"></div>
+    
+    <div id="invoiceContainer" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+    background: rgba(0,0,0,0.7); z-index: 2000; display: none; 
+    justify-content: center; align-items: center;">
+</div>
     
     <script>
         // 1. تهيئة Firebase
@@ -1292,8 +1298,5 @@
         // 17. إيقاف الكاميرا عند مغادرة الصفحة
         window.addEventListener('beforeunload', stopCamera);
     </script>
-    <div id="invoiceContainer" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
-    background: rgba(0,0,0,0.7); z-index: 2000; display: flex; justify-content: center; align-items: center;">
-</div>
 </body>
 </html>
