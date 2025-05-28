@@ -1191,16 +1191,6 @@ function showInvoice(invoice) {
     const invoiceData = encodeURIComponent(JSON.stringify(invoice));
     iframe.src = `invoice.html?data=${invoiceData}`;
     
-    // إضافة زر العودة
-    const backButton = document.createElement('button');
-    backButton.className = 'btn btn-success';
-    backButton.style.marginTop = '15px';
-    backButton.innerHTML = '<i class="fas fa-undo-alt"></i> العودة للبيع';
-    backButton.onclick = function() {
-        placeholder.style.display = 'none';
-        resetSystem();
-    };
-    placeholder.appendChild(backButton);
 }
         
         // 13. حفظ الفاتورة في قاعدة البيانات
