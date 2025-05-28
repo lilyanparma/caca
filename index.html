@@ -46,27 +46,65 @@
             padding: 20px;
         }
         
-        .header {
-            text-align: center;
+        /* تصميم جديد للرأس بتأثير ثلاثي الأبعاد */
+        .header-container {
+            background: linear-gradient(145deg, #4361ee, #3a0ca3);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.3);
             margin-bottom: 30px;
-            padding-bottom: 15px;
             position: relative;
+            overflow: hidden;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+        
+        .header {
+            position: relative;
+            z-index: 2;
         }
         
         .header h1 {
-            color: var(--primary);
-            font-size: 2.2rem;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin: 0;
+            padding: 10px 0;
+            letter-spacing: 1px;
+            position: relative;
             display: inline-block;
+        }
+        
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 3px;
         }
         
         .search-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 30px;
+            margin: 20px 0 30px;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
         
         .search-toggle {
@@ -84,6 +122,7 @@
             align-items: center;
             gap: 10px;
             font-size: 1.1rem;
+            margin-top: 10px;
         }
         
         .search-toggle:hover {
@@ -108,6 +147,7 @@
             overflow: hidden;
             animation: fadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
             border: 1px solid rgba(0,0,0,0.05);
+            flex-direction: row;
         }
         
         @keyframes fadeIn {
@@ -581,10 +621,26 @@
             margin-bottom: 10px;
         }
         
+        /* مكان لعرض الفاتورة */
+        #invoicePlaceholder {
+            display: none;
+            width: 100%;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            margin-top: 30px;
+        }
+        
         /* التكيف مع الشاشات الصغيرة */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
+            }
+            
+            .header-container {
+                padding: 20px 15px;
+                border-radius: 15px;
             }
             
             .header h1 {
@@ -596,9 +652,23 @@
                 font-size: 1rem;
             }
             
+            .search-wrapper {
+                flex-direction: column;
+                border-radius: 15px;
+            }
+            
             .search-input {
                 padding: 14px 20px;
                 font-size: 1rem;
+            }
+            
+            .search-actions {
+                width: 100%;
+            }
+            
+            #cameraBtn {
+                border-radius: 0 0 15px 15px !important;
+                width: 100%;
             }
             
             .product-header {
@@ -651,285 +721,19 @@
             .confirmation-modal {
                 padding: 20px 15px;
             }
-            
-.elegant-header {
-    background: linear-gradient(135deg, #4361ee, #3a0ca3);
-    padding: 10px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15),
-                0 2px 10px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.header-content {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.logo-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    position: relative;
-}
-
-.logo-icon {
-    font-size: 1.8rem;
-    color: white;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transform: rotate(-10deg);
-    transition: transform 0.3s ease;
-}
-
-.logo-wrapper:hover .logo-icon {
-    transform: rotate(0deg) scale(1.1);
-}
-
-.elegant-header h1 {
-    margin: 0;
-    color: white;
-    font-size: 1.6rem;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    position: relative;
-    padding: 5px 0;
-}
-
-.elegant-header h1::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 3px;
-    transition: width 0.3s ease;
-}
-
-.logo-wrapper:hover h1::after {
-    width: 100%;
-}
-
-@media (max-width: 768px) {
-    .elegant-header h1 {
-        font-size: 1.4rem;
-    }
-    
-    .logo-icon {
-        font-size: 1.5rem;
-    }
-    
-    .logo-wrapper {
-        gap: 10px;
-    }
-}
-
-/* أنماط الرأس */
-.elegant-header {
-    background: linear-gradient(135deg, #4361ee, #3a0ca3);
-    padding: 10px 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15),
-                0 2px 10px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.header-content {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.logo-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    position: relative;
-}
-
-.logo-icon {
-    font-size: 1.8rem;
-    color: white;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transform: rotate(-10deg);
-    transition: transform 0.3s ease;
-}
-
-.logo-wrapper:hover .logo-icon {
-    transform: rotate(0deg) scale(1.1);
-}
-
-.elegant-header h1 {
-    margin: 0;
-    color: white;
-    font-size: 1.6rem;
-    font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    position: relative;
-    padding: 5px 0;
-}
-
-/* أنماط حقل البحث */
-.search-section {
-    background: #f8f9fa;
-    padding: 20px 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    border-bottom: 1px solid #e9ecef;
-}
-
-.search-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.search-controls {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-}
-
-.search-toggle {
-    background: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 50px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    cursor: pointer;
-    font-weight: 700;
-    color: #4361ee;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1rem;
-    border: 1px solid #e0e0e0;
-}
-
-.search-wrapper {
-    display: none;
-    flex: 1;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    overflow: hidden;
-    border: 1px solid #e0e0e0;
-}
-
-.search-input {
-    width: 100%;
-    padding: 12px 20px;
-    border: none;
-    font-size: 1rem;
-    background: transparent;
-}
-
-.search-actions .btn {
-    border-radius: 0 12px 12px 0;
-    padding: 12px 20px;
-}
-
-/* تعديلات للجوال */
-@media (max-width: 768px) {
-    /* تعديلات الرأس */
-    .elegant-header h1 {
-        font-size: 1.4rem;
-    }
-    
-    .logo-icon {
-        font-size: 1.5rem;
-    }
-    
-    .logo-wrapper {
-        gap: 10px;
-    }
-    
-    /* تعديلات حقل البحث */
-    .search-controls {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .search-toggle {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .search-wrapper {
-        width: 100%;
-        flex-direction: column;
-    }
-    
-    .search-wrapper.active {
-        display: flex;
-    }
-    
-    .search-input {
-        border-radius: 12px 12px 0 0;
-        text-align: center;
-    }
-    
-    .search-actions .btn {
-        border-radius: 0 0 12px 12px;
-        width: 100%;
-    }
-}
-
-
-/* تأكيد على أنماط العرض الأساسية */
-.search-wrapper {
-    display: none; /* مخفي بشكل افتراضي */
-}
-
-@media (max-width: 768px) {
-    .search-wrapper {
-        display: none;
-        flex-direction: column;
-    }
-    
-    .search-wrapper.active {
-        display: flex; /* يظهر فقط عند وجود class 'active' */
-    }
-}
-
-@media (min-width: 769px) {
-    .search-wrapper {
-        display: none;
-        flex-direction: row;
-    }
-}
-
-            
         }
     </style>
 </head>
 <body>
-<!-- رأس الصفحة المعدل -->
-<!-- رأس الصفحة المعدل -->
-<div class="elegant-header">
-    <div class="header-content">
-        <div class="logo-wrapper">
-            <i class="fas fa-cash-register logo-icon"></i>
-            <h1>نظام البيع الذكي</h1>
+    <div class="container">
+        <!-- حاوية جديدة للرأس بتأثير ثلاثي الأبعاد -->
+        <div class="header-container">
+            <div class="header">
+                <h1><i class="fas fa-cash-register"></i> نظام البيع الذكي</h1>
+            </div>
         </div>
-    </div>
-</div>
-
-<!-- حقل البحث المعدل -->
-<div class="search-section">
-    <div class="search-container">
-        <div class="search-controls">
+        
+        <div class="search-container">
             <button id="searchToggle" class="search-toggle">
                 <i class="fas fa-search"></i> بحث عن منتج
             </button>
@@ -943,14 +747,14 @@
                     autocomplete="off"
                 >
                 <div class="search-actions">
-                    <button id="cameraBtn" class="btn btn-primary">
+                    <button id="cameraBtn" class="btn btn-primary" style="border-radius: 0 50px 50px 0;">
                         <i class="fas fa-camera"></i> مسح
                     </button>
                 </div>
             </div>
         </div>
-    </div>
-</div>        <div id="cameraScanner">
+        
+        <div id="cameraScanner">
             <video muted playsinline></video>
             <div class="scanner-overlay">
                 <div class="scanner-frame"></div>
@@ -1047,7 +851,10 @@
                 </button>
             </div>
         </div>
-    
+        
+        <!-- مكان لعرض الفاتورة -->
+        <div id="invoicePlaceholder"></div>
+    </div>
     
     <!-- نافذة تأكيد الإرجاع -->
     <div id="returnConfirmModal" class="modal-overlay">
@@ -1071,8 +878,6 @@
 
     <!-- تنبيهات النظام -->
     <div id="toast" class="toast"></div>
-    <!-- مكان لعرض الفاتورة -->
-<div id="invoicePlaceholder" style="display:none;"></div>
     
     <script>
         // 1. تهيئة Firebase
@@ -1133,7 +938,8 @@
             confirmReturnBtn: document.getElementById('confirmReturnBtn'),
             cancelReturnBtn: document.getElementById('cancelReturnBtn'),
             returnSuccessNotice: document.getElementById('returnSuccessNotice'),
-            returnSuccessText: document.getElementById('returnSuccessText')
+            returnSuccessText: document.getElementById('returnSuccessText'),
+            invoicePlaceholder: document.getElementById('invoicePlaceholder')
         };
         
         // 4. التحكم في شريط البحث
@@ -1143,21 +949,11 @@
                 searchProduct();
             }
         });
+        
         function toggleSearch() {
             elements.searchWrapper.style.display = elements.searchWrapper.style.display === 'flex' ? 'none' : 'flex';
             if (elements.searchWrapper.style.display === 'flex') {
                 elements.barcodeInput.focus();
-            }
-        }
-        
-        // 5. التحكم في كاميرا الباركود
-        elements.cameraBtn.addEventListener('click', toggleCamera);
-        
-        async function toggleCamera() {
-            if (cameraActive) {
-                await stopCamera();
-            } else {
-                await startCamera();
             }
         }
         
@@ -1445,32 +1241,30 @@
             return invoice;
         }
         
-function showInvoice(invoice) {
-    // إنشاء iframe لعرض الفاتورة
-    const iframe = document.createElement('iframe');
-    iframe.id = 'invoiceFrame';
-    iframe.style.width = '100%';
-    iframe.style.height = '600px';
-    iframe.style.border = 'none';
-    iframe.style.marginTop = '20px';
-    iframe.style.borderRadius = '15px';
-    iframe.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
-    
-    // إضافة الـ iframe إلى الصفحة
-    const placeholder = document.getElementById('invoicePlaceholder');
-    placeholder.innerHTML = '';
-    placeholder.appendChild(iframe);
-    placeholder.style.display = 'block';
-    
-    // إخفاء الأقسام الأخرى
-    document.getElementById('productDetails').style.display = 'none';
-    document.getElementById('searchWrapper').style.display = 'none';
-    
-    // تحميل الفاتورة في الـ iframe
-    const invoiceData = encodeURIComponent(JSON.stringify(invoice));
-    iframe.src = `invoice.html?data=${invoiceData}`;
-    
-}
+        function showInvoice(invoice) {
+            // إنشاء iframe لعرض الفاتورة
+            const iframe = document.createElement('iframe');
+            iframe.id = 'invoiceFrame';
+            iframe.style.width = '100%';
+            iframe.style.height = '600px';
+            iframe.style.border = 'none';
+            iframe.style.marginTop = '20px';
+            iframe.style.borderRadius = '15px';
+            iframe.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+            
+            // إضافة الـ iframe إلى الصفحة
+            elements.invoicePlaceholder.innerHTML = '';
+            elements.invoicePlaceholder.appendChild(iframe);
+            elements.invoicePlaceholder.style.display = 'block';
+            
+            // إخفاء الأقسام الأخرى
+            elements.productDetails.style.display = 'none';
+            elements.searchWrapper.style.display = 'none';
+            
+            // تحميل الفاتورة في الـ iframe
+            const invoiceData = encodeURIComponent(JSON.stringify(invoice));
+            iframe.src = `invoice.html?data=${invoiceData}`;
+        }
         
         // 13. حفظ الفاتورة في قاعدة البيانات
         function saveInvoiceToDatabase(invoice) {
@@ -1584,15 +1378,16 @@ function showInvoice(invoice) {
                 }, 500);
             }, duration);
         }
-        // استقبال رسالة من الفاتورة للإغلاق
-window.addEventListener('message', function(e) {
-    if (e.data === 'closeInvoice') {
-        document.getElementById('invoicePlaceholder').style.display = 'none';
-        resetSystem();
-    }
-});
         
-        // 17. إيقاف الكاميرا عند مغادرة الصفحة
+        // 17. استقبال رسالة من الفاتورة للإغلاق
+        window.addEventListener('message', function(e) {
+            if (e.data === 'closeInvoice') {
+                elements.invoicePlaceholder.style.display = 'none';
+                resetSystem();
+            }
+        });
+        
+        // 18. إيقاف الكاميرا عند مغادرة الصفحة
         window.addEventListener('beforeunload', stopCamera);
     </script>
 </body>
