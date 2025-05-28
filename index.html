@@ -710,19 +710,127 @@
         padding: 15px 25px;
     }
 }
+
+        /* أنماط الرأس ثلاثي الأبعاد */
+        .header {
+            padding: 5px 0 10px;
+            position: relative;
+            background: #f0f2f5;
+            z-index: 10;
+        }
+        
+        .three-d-container {
+            perspective: 1200px;
+            text-align: center;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .three-d-text {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fff;
+            display: inline-block;
+            padding: 15px 35px;
+            border-radius: 15px;
+            background: linear-gradient(145deg, var(--primary), var(--secondary));
+            transform-style: preserve-3d;
+            transform: rotateX(15deg) rotateY(-5deg);
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.2),
+                0 5px 15px rgba(0,0,0,0.1),
+                0 0 0 4px rgba(255,255,255,0.1) inset,
+                0 -8px 0 0 rgba(0,0,0,0.2) inset;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: float 4s ease-in-out infinite;
+            margin-top: 5px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .three-d-text::before {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .three-d-text::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 15px;
+            background: linear-gradient(135deg, transparent, rgba(0,0,0,0.1));
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .three-d-text:hover {
+            transform: rotateX(12deg) rotateY(-3deg) scale(1.03);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.25),
+                0 8px 20px rgba(0,0,0,0.15),
+                0 0 0 4px rgba(255,255,255,0.1) inset,
+                0 -10px 0 0 rgba(0,0,0,0.25) inset;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: rotateX(15deg) rotateY(-5deg) translateY(0); }
+            50% { transform: rotateX(15deg) rotateY(-5deg) translateY(-10px); }
+        }
+        
+        /* باقي الأنماط الخاصة بالصفحة */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        /* ... (بقية أنماط الصفحة الأصلية تبقى كما هي) ... */
+        
+        @media (max-width: 768px) {
+            .three-d-text {
+                font-size: 1.8rem;
+                padding: 12px 25px;
+                transform: rotateX(10deg) rotateY(-3deg);
+            }
+            
+            @keyframes float {
+                0%, 100% { transform: rotateX(10deg) rotateY(-3deg) translateY(0); }
+                50% { transform: rotateX(10deg) rotateY(-3deg) translateY(-8px); }
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .three-d-text {
+                font-size: 1.5rem;
+                padding: 10px 20px;
+            }
+        }
             
         }
     </style>
 </head>
 <body>
-  <div class="header">
-    <div class="three-d-header">
-        <div class="three-d-text">
-            <i class="fas fa-cash-register"></i> نظام البيع الذكي
-        </div>
-    </div>
-</div>
-        
+   <div class="container">
+        <div class="header">
+            <div class="three-d-container">
+                <div class="three-d-text">
+                    <i class="fas fa-cash-register"></i> نظام البيع الذكي
+                </div>
+            </div>
+        </div>        
         <div class="search-container">
             <button id="searchToggle" class="search-toggle">
                 <i class="fas fa-search"></i> بحث عن منتج
