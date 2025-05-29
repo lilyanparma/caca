@@ -348,12 +348,74 @@
             gap: 10px;
         }
         
+        /* أنماط المخزون وتاريخ الصلاحية لجميع الشاشات */
         .product-stock {
             color: var(--gray);
             font-size: 1.1rem;
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.3s ease;
+            padding: 3px 8px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .product-stock.low-stock {
+            color: var(--danger);
+            font-weight: bold;
+            animation: blink 1.5s infinite;
+            background-color: rgba(248, 150, 30, 0.1);
+        }
+        
+        .product-stock.out-of-stock {
+            color: var(--danger);
+            font-weight: bold;
+            animation: blink 1s infinite;
+        }
+        
+        .product-stock.stock-warning {
+            color: var(--warning);
+            font-weight: bold;
+        }
+        
+        .product-expiry {
+            color: var(--gray);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .product-expiry.expiry-soon {
+            color: var(--warning);
+            font-weight: bold;
+        }
+        
+        .product-expiry.expiry-passed {
+            color: var(--danger);
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
         }
         
         .discount-section {
@@ -610,11 +672,6 @@
             animation: fadeIn 0.3s;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
         .return-success-notice i {
             font-size: 2rem;
             margin-bottom: 10px;
@@ -714,84 +771,6 @@
             .confirmation-modal {
                 padding: 20px 15px;
             }
-            
-            /* إضافة إلى قسم الـ CSS */
-           .product-stock.low-stock {
-           color: var(--danger);
-           font-weight: bold;
-           }
-
-          .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none !important;
-          box-shadow: none !important;
-          }
-          
-                    .product-expiry {
-         color: var(--gray);
-         font-size: 1.1rem;
-         display: flex;
-         align-items: center;
-         gap: 8px;
-         margin-bottom: 15px;
-         }
-
-        .expiry-soon {
-        color: var(--warning);
-        font-weight: bold;
-        }
-
-       .expiry-passed {
-       color: var(--danger);
-       font-weight: bold;
-       animation: pulse 1.5s infinite;
-       }
-
-       @keyframes pulse {
-       0% { opacity: 1; }
-       50% { opacity: 0.6; }
-       100% { opacity: 1; }
-       }
-          
-          /* تأثير الوميض للمخزون المنخفض */
-.low-stock {
-    animation: blink 1.5s infinite;
-}
-
-@keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-/* لون تحذير للمخزون المنخفض */
-.stock-warning {
-    color: var(--warning);
-    font-weight: bold;
-}
-
-/* أنماط إضافية */
-.out-of-stock {
-    color: var(--danger);
-    font-weight: bold;
-    animation: blink 1s infinite;
-}
-
-
-.product-stock {
-    transition: all 0.3s ease;
-    padding: 3px 8px;
-    border-radius: 5px;
-}
-
-.low-stock {
-    background-color: rgba(248, 150, 30, 0.1); /* لون خلفية تحذير خفيف */
-    padding: 3px 8px;
-    border-radius: 5px;
-}
-
-            
         }
     </style>
 </head>
@@ -850,8 +829,8 @@
                         <i class="fas fa-boxes"></i> المخزون: 10 قطع
                     </div>
                     <div id="productExpiry" class="product-expiry">
-                 <i class="fas fa-calendar-alt"></i> تاريخ الصلاحية: غير محدد
-                  </div>
+                        <i class="fas fa-calendar-alt"></i> تاريخ الصلاحية: غير محدد
+                    </div>
                 </div>
             </div>
             
