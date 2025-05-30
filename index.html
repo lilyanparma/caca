@@ -31,17 +31,25 @@
       min-height: 100vh;
     }
 
-    /* Header with modern gradient */
+    /* Header with modern gradient - تم التعديل هنا */
     .header {
       background: var(--primary-gradient);
       color: white;
-      padding: 2.5rem 1.5rem;
+      padding: 1.5rem;
       text-align: center;
       position: relative;
       overflow: hidden;
-      margin-bottom: 2rem;
-      width: 100%;
+      margin: 1rem auto 2rem;
+      max-width: 1200px;
+      width: calc(100% - 2rem);
+      border-radius: 12px;
       box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+
+    .header:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
 
     .header::before {
@@ -55,21 +63,21 @@
     }
 
     .header h1 {
-      font-size: 2.5rem;
+      font-size: 1.8rem;
       margin-bottom: 0.5rem;
       position: relative;
       text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .header p {
-      font-size: 1.1rem;
+      font-size: 1rem;
       opacity: 0.9;
       position: relative;
     }
 
     .header i {
-      margin-left: 15px;
-      font-size: 2rem;
+      margin-left: 10px;
+      font-size: 1.5rem;
       vertical-align: middle;
     }
 
@@ -550,7 +558,7 @@
     /* Responsive design */
     @media (max-width: 768px) {
       .header h1 {
-        font-size: 2rem;
+        font-size: 1.5rem;
       }
       
       .services-container {
@@ -574,147 +582,28 @@
         flex-direction: column;
         align-items: stretch;
       }
+    }
+
+    @media (min-width: 1200px) {
+      .header {
+        padding: 1.5rem;
+      }
       
-       /* أنماط الرأس الاحترافية */
-  .professional-header {
-    background: #ffffff;
-    color: #2c3e50;
-    padding: 0;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    position: relative;
-  }
-
-  .header-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .header-text h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #34495e;
-  }
-
-  .header-text p {
-    font-size: 1rem;
-    color: #7f8c8d;
-  }
-
-  .header-text i {
-    color: #3498db;
-    margin-left: 10px;
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-  }
-
-  .header-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 0.7rem 1.5rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-  }
-
-  .header-btn i {
-    margin-left: 8px;
-  }
-
-  .header-btn:hover {
-    background: #2980b9;
-    transform: translateY(-2px);
-  }
-
-  .header-border {
-    height: 4px;
-    background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c);
-    width: 100%;
-  }
-
-  @media (max-width: 768px) {
-    .header-container {
-      flex-direction: column;
-      text-align: center;
-      padding: 1rem;
-    }
-
-    .header-text h1 {
-      font-size: 1.7rem;
-    }
-
-    .header-actions {
-      margin-top: 1rem;
-    }
-  }
-  
-.header {
-  background: var(--primary-gradient);
-  color: white;
-  padding: 1.2rem 1.5rem; /* تقليل الحشوة أكثر */
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  margin: 1rem auto 1.5rem; /* هوامش متوازنة */
-  max-width: 1200px;
-  width: calc(100% - 2rem); /* تقليل المساحة الجانبية */
-  border-radius: 12px !important; /* التأكيد على الحواف المنحنية */
-  box-shadow: var(--shadow);
-  transition: all 0.3s ease;
-}
-
-.header h1 {
-  font-size: 1.8rem; /* تصغير حجم الخط */
-  margin-bottom: 0.3rem; /* تقليل المسافة */
-}
-
-.header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%);
-}
-
-/* للتأكد من أن الحواف المنحنية تظهر دائمًا */
-@media (min-width: 768px) {
-  .header {
-    padding: 1rem 1.5rem;
-    margin: 1rem auto 2rem;
-  }
-  
-  .header h1 {
-    font-size: 2rem;
-  }
-}
-  
-      
+      .header h1 {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
 <body>
- <!-- استبدال قسم ال header الحالي بهذا التصميم -->
-<!-- Header with modern gradient -->
+ <!-- Header with modern gradient -->
 <header class="header">
   <h1>
     <i class="fas fa-concierge-bell"></i> الخدمات الإضافية
   </h1>
-
+  <p>إدارة الخدمات الإضافية المقدمة للعملاء</p>
 </header>
+
   <div class="container">
     <!-- Action Buttons -->
     <div class="action-buttons">
