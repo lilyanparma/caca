@@ -574,18 +574,135 @@
         flex-direction: column;
         align-items: stretch;
       }
+      
+       /* أنماط الرأس الاحترافية */
+  .professional-header {
+    background: #ffffff;
+    color: #2c3e50;
+    padding: 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    position: relative;
+  }
+
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-text h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #34495e;
+  }
+
+  .header-text p {
+    font-size: 1rem;
+    color: #7f8c8d;
+  }
+
+  .header-text i {
+    color: #3498db;
+    margin-left: 10px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .header-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .header-btn i {
+    margin-left: 8px;
+  }
+
+  .header-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  .header-border {
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c);
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .header-container {
+      flex-direction: column;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .header-text h1 {
+      font-size: 1.7rem;
+    }
+
+    .header-actions {
+      margin-top: 1rem;
+    }
+  }
+  
+ .header {
+  max-width: 1200px; /* نفس عرض الـ container */
+  margin: 0 auto 2rem; /* توسيط مع هامش سفلي */
+  border-radius: 15px; /* زوايا مدورة */
+  width: calc(100% - 3rem); /* للحفاظ على المساحة الجانبية */
+}
+
+/* للتأكد من أن الهيدر يبقى ضمن المساحة على الشاشات الكبيرة */
+.container {
+  position: relative;
+}
+
+
+@keyframes ring {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  50% { transform: rotate(-10deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.header h1 i.fa-concierge-bell:hover {
+  animation: ring 0.5s ease;
+}
+
+
+.header h1 i.fa-concierge-bell:hover {
+  filter: drop-shadow(0 0 8px rgba(255, 152, 0, 0.7));
+}
+  
+      
     }
   </style>
 </head>
 <body>
-  <!-- Header with modern gradient -->
-  <header class="header">
-    <h1>
-      <i class="fas fa-star"></i> نظام إدارة الخدمات الإضافية
-    </h1>
-    <p>إدارة كاملة للخدمات المقدمة</p>
-  </header>
+ <!-- استبدال قسم ال header الحالي بهذا التصميم -->
+<!-- Header with modern gradient -->
+<header class="header">
+  <h1>
+    <i class="fas fa-concierge-bell"></i> نظام إدارة الخدمات الإضافية
+  </h1>
 
+</header>
   <div class="container">
     <!-- Action Buttons -->
     <div class="action-buttons">
