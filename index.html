@@ -286,11 +286,12 @@
       flex-wrap: wrap;
     }
 
-    /* Service cards with enhanced 3D effect */
+  /* Service cards with enhanced 3D effect - المعدل */
+    /* Service cards container - تم تعديل التباعد هنا */
     .services-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 2rem;
+      gap: 3rem; /* تم زيادة التباعد من 2rem إلى 3rem */
       margin-bottom: 3rem;
       perspective: 1000px;
     }
@@ -300,16 +301,16 @@
       border-radius: 15px;
       overflow: hidden;
       box-shadow: var(--shadow);
-      transition: var(--transition);
       position: relative;
       transform-style: preserve-3d;
-      transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
       border: 1px solid rgba(0,0,0,0.05);
+      margin: 0.5rem; /* إضافة هامش خارجي إضافي */
     }
 
-    .service-card:hover {
-      transform: translateY(-10px) perspective(1000px) rotateX(5deg) rotateY(2deg);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    /* التأثير ثلاثي الأبعاد الأساسي */
+    .service-card {
+      transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+      transition: transform 0.5s ease, box-shadow 0.3s ease;
     }
 
     .service-card::before {
@@ -321,7 +322,6 @@
       height: 5px;
       background: var(--secondary-gradient);
     }
-
     .service-header {
       padding: 1.5rem;
       background: white;
