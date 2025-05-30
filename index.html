@@ -31,7 +31,7 @@
       min-height: 100vh;
     }
 
-    /* Header with modern gradient - تم التعديل هنا */
+    /* Header with modern gradient */
     .header {
       background: var(--primary-gradient);
       color: white;
@@ -97,9 +97,17 @@
       flex-wrap: wrap;
     }
 
-    /* Search bar with modern design */
+    /* New Search bar design */
     .search-container {
       margin: 2rem 0;
+      position: relative;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      display: none; /* Initially hidden */
+    }
+
+    .search-wrapper {
       position: relative;
     }
 
@@ -113,6 +121,12 @@
       font-size: 1rem;
       transition: var(--transition);
       background: white;
+      cursor: pointer;
+    }
+
+    .search-input.expanded {
+      border-radius: 15px 15px 0 0;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
 
     .search-input:focus {
@@ -128,6 +142,58 @@
       transform: translateY(-50%);
       color: #888;
       font-size: 1.2rem;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .search-input.expanded + .search-icon {
+      color: #667eea;
+      transform: translateY(-50%) rotate(90deg);
+    }
+
+    .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      max-height: 0;
+      overflow: hidden;
+      transition: var(--transition-slow);
+      z-index: 10;
+    }
+
+    .search-input.expanded ~ .search-results {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 1rem;
+      border-top: 1px solid #eee;
+    }
+
+    .search-result-item {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .search-result-item:hover {
+      background: #f8f9fa;
+      transform: translateX(-5px);
+    }
+
+    .search-result-item .price {
+      color: #764ba2;
+      font-weight: 600;
     }
 
     /* Form styling */
@@ -274,6 +340,10 @@
       background: var(--delete-gradient);
     }
 
+    .btn-search {
+      background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+    }
+
     .btn i {
       margin-left: 8px;
       font-size: 1.2rem;
@@ -286,12 +356,11 @@
       flex-wrap: wrap;
     }
 
-  /* Service cards with enhanced 3D effect - المعدل */
-    /* Service cards container - تم تعديل التباعد هنا */
+     /* Service cards with enhanced 3D effect - تم التعديل هنا */
     .services-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 3rem; /* تم زيادة التباعد من 2rem إلى 3rem */
+      gap: 2rem;
       margin-bottom: 3rem;
       perspective: 1000px;
     }
@@ -304,13 +373,13 @@
       position: relative;
       transform-style: preserve-3d;
       border: 1px solid rgba(0,0,0,0.05);
-      margin: 0.5rem; /* إضافة هامش خارجي إضافي */
+      margin: 0.5rem;
+      transition: var(--transition);
     }
 
-    /* التأثير ثلاثي الأبعاد الأساسي */
-    .service-card {
-      transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-      transition: transform 0.5s ease, box-shadow 0.3s ease;
+    .service-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: var(--shadow-hover);
     }
 
     .service-card::before {
@@ -322,6 +391,7 @@
       height: 5px;
       background: var(--secondary-gradient);
     }
+
     .service-header {
       padding: 1.5rem;
       background: white;
@@ -613,12 +683,18 @@
       <button class="btn btn-edit" id="openEditModalBtn">
         <i class="fas fa-edit"></i> تعديل خدمة
       </button>
+      <button class="btn btn-search" id="toggleSearchBtn">
+        <i class="fas fa-search"></i> بحث
+      </button>
     </div>
 
-    <!-- Search bar -->
-    <div class="search-container">
-      <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن خدمة...">
-      <i class="fas fa-search search-icon"></i>
+    <!-- New Search bar with dropdown results -->
+    <div class="search-container" id="searchContainer">
+      <div class="search-wrapper">
+        <input type="text" id="searchInput" class="search-input" placeholder="ابحث عن خدمة...">
+        <i class="fas fa-search search-icon"></i>
+        <div class="search-results" id="searchResults"></div>
+      </div>
     </div>
 
     <!-- Alerts -->
@@ -664,7 +740,7 @@
     </div>
 
     <!-- Services Container -->
-    <div id="servicesContainer"></div>
+    <div class="services-container" id="servicesContainer"></div>
     
     <!-- Loading Spinner -->
     <div id="loading" class="loading">
@@ -735,393 +811,413 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
   
-  <script>
-    // إعدادات Firebase الخاصة بمشروع Pharmacy System
-    const firebaseConfig = {
-      apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
-      authDomain: "pharmacy-system-9def6.firebaseapp.com",
-      projectId: "pharmacy-system-9def6",
-      storageBucket: "pharmacy-system-9def6.appspot.com",
-      messagingSenderId: "630855008414",
-      appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
-      measurementId: "G-LC5NDKP6QZ"
-    };
+<script>
+  // إعدادات Firebase الخاصة بمشروع Pharmacy System
+  const firebaseConfig = {
+    apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
+    authDomain: "pharmacy-system-9def6.firebaseapp.com",
+    projectId: "pharmacy-system-9def6",
+    storageBucket: "pharmacy-system-9def6.appspot.com",
+    messagingSenderId: "630855008414",
+    appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
+    measurementId: "G-LC5NDKP6QZ"
+  };
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
 
-    // App variables
-    let currentServiceKey = null;
-    let allServices = {};
+  // App variables
+  let currentServiceKey = null;
+  let allServices = {};
+  let isSearchExpanded = false;
 
-    // DOM Elements
-    const elements = {
-      toggleAddFormBtn: document.getElementById('toggleAddFormBtn'),
-      searchInput: document.getElementById('searchInput'),
-      serviceName: document.getElementById('serviceName'),
-      serviceDate: document.getElementById('serviceDate'),
-      servicePrice: document.getElementById('servicePrice'),
-      serviceDetails: document.getElementById('serviceDetails'),
-      addServiceBtn: document.getElementById('addServiceBtn'),
-      cancelAddBtn: document.getElementById('cancelAddBtn'),
-      addServiceForm: document.getElementById('addServiceForm'),
-      openEditModalBtn: document.getElementById('openEditModalBtn'),
-      editModal: document.getElementById('editModal'),
-      closeModal: document.querySelector('.close'),
-      searchServiceName: document.getElementById('searchServiceName'),
-      searchServiceBtn: document.getElementById('searchServiceBtn'),
-      editForm: document.getElementById('editForm'),
-      editName: document.getElementById('editName'),
-      editDate: document.getElementById('editDate'),
-      editPrice: document.getElementById('editPrice'),
-      editDetails: document.getElementById('editDetails'),
-      saveEditBtn: document.getElementById('saveEditBtn'),
-      deleteServiceBtn: document.getElementById('deleteServiceBtn'),
-      cancelEditBtn: document.getElementById('cancelEditBtn'),
-      servicesContainer: document.getElementById('servicesContainer'),
-      loading: document.getElementById('loading'),
-      successAlert: document.getElementById('successAlert'),
-      errorAlert: document.getElementById('errorAlert')
-    };
+  // DOM Elements
+  const elements = {
+    toggleAddFormBtn: document.getElementById('toggleAddFormBtn'),
+    toggleSearchBtn: document.getElementById('toggleSearchBtn'),
+    searchContainer: document.getElementById('searchContainer'),
+    searchInput: document.getElementById('searchInput'),
+    searchResults: document.getElementById('searchResults'),
+    serviceName: document.getElementById('serviceName'),
+    serviceDate: document.getElementById('serviceDate'),
+    servicePrice: document.getElementById('servicePrice'),
+    serviceDetails: document.getElementById('serviceDetails'),
+    addServiceBtn: document.getElementById('addServiceBtn'),
+    cancelAddBtn: document.getElementById('cancelAddBtn'),
+    addServiceForm: document.getElementById('addServiceForm'),
+    openEditModalBtn: document.getElementById('openEditModalBtn'),
+    editModal: document.getElementById('editModal'),
+    closeModal: document.querySelector('.close'),
+    searchServiceName: document.getElementById('searchServiceName'),
+    searchServiceBtn: document.getElementById('searchServiceBtn'),
+    editForm: document.getElementById('editForm'),
+    editName: document.getElementById('editName'),
+    editDate: document.getElementById('editDate'),
+    editPrice: document.getElementById('editPrice'),
+    editDetails: document.getElementById('editDetails'),
+    saveEditBtn: document.getElementById('saveEditBtn'),
+    deleteServiceBtn: document.getElementById('deleteServiceBtn'),
+    cancelEditBtn: document.getElementById('cancelEditBtn'),
+    servicesContainer: document.getElementById('servicesContainer'),
+    loading: document.getElementById('loading'),
+    successAlert: document.getElementById('successAlert'),
+    errorAlert: document.getElementById('errorAlert')
+  };
 
-    // Initialize the app
-    document.addEventListener('DOMContentLoaded', function() {
-      showLoading(true);
-      loadServices();
-      setupEventListeners();
+  // Initialize the app
+  document.addEventListener('DOMContentLoaded', function() {
+    showLoading(true);
+    loadServices();
+    setupEventListeners();
+  });
+
+  // Event Listeners
+  function setupEventListeners() {
+    // Toggle add service form
+    elements.toggleAddFormBtn.addEventListener('click', toggleAddForm);
+    elements.cancelAddBtn.addEventListener('click', toggleAddForm);
+    
+    // Toggle search container
+    elements.toggleSearchBtn.addEventListener('click', toggleSearch);
+    
+    // Search functionality
+    elements.searchInput.addEventListener('input', (e) => {
+      filterServices(e.target.value.toLowerCase());
     });
 
-    // Event Listeners
-    function setupEventListeners() {
-      // Toggle add service form
-      elements.toggleAddFormBtn.addEventListener('click', toggleAddForm);
-      elements.cancelAddBtn.addEventListener('click', toggleAddForm);
+    // Add service
+    elements.addServiceBtn.addEventListener('click', addService);
+    elements.serviceName.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') addService();
+    });
+
+    // Edit modal
+    elements.openEditModalBtn.addEventListener('click', openEditModal);
+    elements.closeModal.addEventListener('click', closeEditModal);
+    elements.searchServiceBtn.addEventListener('click', searchService);
+    elements.searchServiceName.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchService();
+    });
+
+    // Edit and delete
+    elements.saveEditBtn.addEventListener('click', saveEdit);
+    elements.deleteServiceBtn.addEventListener('click', () => {
+      if (confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
+        deleteService();
+      }
+    });
+    elements.cancelEditBtn.addEventListener('click', closeEditModal);
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === elements.editModal) {
+        closeEditModal();
+      }
+    });
+  }
+
+  // Toggle search container
+  function toggleSearch() {
+    elements.searchContainer.style.display = elements.searchContainer.style.display === 'none' ? 'block' : 'none';
+    
+    if (elements.searchContainer.style.display === 'block') {
+      elements.searchInput.focus();
+    } else {
+      // Reset search when hiding
+      elements.searchInput.value = '';
+      filterServices('');
+    }
+  }
+
+  // Toggle add service form
+  function toggleAddForm() {
+    elements.addServiceForm.classList.toggle('active');
+    
+    if (elements.addServiceForm.classList.contains('active')) {
+      // Reset form when showing
+      elements.serviceName.value = '';
+      elements.serviceDate.value = '';
+      elements.servicePrice.value = '';
+      elements.serviceDetails.value = '';
+    }
+  }
+
+  // Load services from Firebase
+  function loadServices() {
+    database.ref('services').on('value', (snapshot) => {
+      allServices = snapshot.val() || {};
+      displayServices(allServices);
+      showLoading(false);
+    }, (error) => {
+      showError('حدث خطأ أثناء تحميل البيانات: ' + error.message);
+      showLoading(false);
+    });
+  }
+
+  // Display services in the UI
+  function displayServices(services) {
+    elements.servicesContainer.innerHTML = '';
+
+    if (!services || Object.keys(services).length === 0) {
+      elements.servicesContainer.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #888;">
+          <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+          <p>لا توجد خدمات متاحة حالياً</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Convert to array and sort by date (newest first)
+    const servicesArray = Object.entries(services).map(([key, value]) => ({ key, ...value }));
+    servicesArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    servicesArray.forEach(service => {
+      const serviceCard = document.createElement('div');
+      serviceCard.className = 'service-card';
+      serviceCard.setAttribute('data-key', service.key);
       
-      // Search functionality
-      elements.searchInput.addEventListener('input', (e) => {
-        filterServices(e.target.value.toLowerCase());
-      });
-
-      // Add service
-      elements.addServiceBtn.addEventListener('click', addService);
-      elements.serviceName.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addService();
-      });
-
-      // Edit modal
-      elements.openEditModalBtn.addEventListener('click', openEditModal);
-      elements.closeModal.addEventListener('click', closeEditModal);
-      elements.searchServiceBtn.addEventListener('click', searchService);
-      elements.searchServiceName.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') searchService();
-      });
-
-      // Edit and delete
-      elements.saveEditBtn.addEventListener('click', saveEdit);
-      elements.deleteServiceBtn.addEventListener('click', () => {
-        if (confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
-          deleteService();
-        }
-      });
-      elements.cancelEditBtn.addEventListener('click', closeEditModal);
-
-      // Close modal when clicking outside
-      window.addEventListener('click', (e) => {
-        if (e.target === elements.editModal) {
-          closeEditModal();
-        }
-      });
-    }
-
-    // Toggle add service form
-    function toggleAddForm() {
-      elements.addServiceForm.classList.toggle('active');
+      serviceCard.innerHTML = `
+        <div class="service-header">
+          <h3><i class="fas fa-concierge-bell"></i> ${service.name}</h3>
+          <p class="service-date"><i class="far fa-calendar-alt"></i> ${formatDate(service.date)}</p>
+        </div>
+        <div class="service-body">
+          <div class="service-price">
+            <i class="fas fa-money-bill-wave"></i> ${service.price} ر.س
+          </div>
+          ${service.details ? `
+          <div class="service-details">
+            <div class="service-details-title">
+              <i class="fas fa-info-circle"></i> تفاصيل الخدمة
+            </div>
+            <div class="service-details-content">
+              ${service.details}
+            </div>
+          </div>
+          ` : ''}
+        </div>
+      `;
       
-      if (elements.addServiceForm.classList.contains('active')) {
-        // Reset form when showing
-        elements.serviceName.value = '';
-        elements.serviceDate.value = '';
-        elements.servicePrice.value = '';
-        elements.serviceDetails.value = '';
+      elements.servicesContainer.appendChild(serviceCard);
+    });
+  }
+
+  // Filter services based on search input
+  function filterServices(searchText) {
+    if (!searchText) {
+      displayServices(allServices);
+      return;
+    }
+
+    const filteredServices = {};
+    Object.keys(allServices).forEach(key => {
+      const service = allServices[key];
+      if (service.name.toLowerCase().includes(searchText)) {
+        filteredServices[key] = service;
+      }
+    });
+
+    displayServices(filteredServices);
+  }
+
+  // Add a new service
+  function addService() {
+    const name = elements.serviceName.value.trim();
+    const date = elements.serviceDate.value;
+    const price = elements.servicePrice.value.trim();
+    const details = elements.serviceDetails.value.trim();
+
+    // Validation
+    if (!name || !date || !price) {
+      showError('الرجاء ملء جميع الحقول المطلوبة');
+      return;
+    }
+
+    if (isNaN(price)) {
+      showError('يجب أن يكون السعر رقماً');
+      return;
+    }
+
+    showLoading(true);
+
+    database.ref('services').push({
+      name,
+      date,
+      price: parseFloat(price),
+      details
+    })
+    .then(() => {
+      showSuccess('تم إضافة الخدمة بنجاح');
+      // Hide form after successful addition
+      elements.addServiceForm.classList.remove('active');
+      // Clear form
+      elements.serviceName.value = '';
+      elements.serviceDate.value = '';
+      elements.servicePrice.value = '';
+      elements.serviceDetails.value = '';
+    })
+    .catch(error => {
+      showError('حدث خطأ أثناء إضافة الخدمة: ' + error.message);
+    })
+    .finally(() => {
+      showLoading(false);
+    });
+  }
+
+  // Open edit modal
+  function openEditModal() {
+    elements.editModal.style.display = 'block';
+    elements.searchServiceName.value = '';
+    elements.editForm.style.display = 'none';
+    currentServiceKey = null;
+  }
+
+  // Close edit modal
+  function closeEditModal() {
+    elements.editModal.style.display = 'none';
+  }
+
+  // Search for a service to edit
+  function searchService() {
+    const searchName = elements.searchServiceName.value.trim().toLowerCase();
+
+    if (!searchName) {
+      showError('الرجاء إدخال اسم الخدمة للبحث');
+      return;
+    }
+
+    // Search in services
+    let foundService = null;
+    let foundKey = null;
+
+    for (const [key, service] of Object.entries(allServices)) {
+      if (service.name.toLowerCase() === searchName) {
+        foundService = service;
+        foundKey = key;
+        break;
       }
     }
 
-    // Load services from Firebase
-    function loadServices() {
-      database.ref('services').on('value', (snapshot) => {
-        allServices = snapshot.val() || {};
-        displayServices(allServices);
-        showLoading(false);
-      }, (error) => {
-        showError('حدث خطأ أثناء تحميل البيانات: ' + error.message);
-        showLoading(false);
-      });
-    }
-
-    // Display services in the UI
-    function displayServices(services) {
-      elements.servicesContainer.innerHTML = '';
-
-      if (!services || Object.keys(services).length === 0) {
-        elements.servicesContainer.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: #888;">
-            <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-            <p>لا توجد خدمات متاحة حالياً</p>
-          </div>
-        `;
-        return;
-      }
-
-      // Convert to array and sort by date (newest first)
-      const servicesArray = Object.entries(services).map(([key, value]) => ({ key, ...value }));
-      servicesArray.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      servicesArray.forEach(service => {
-        const serviceCard = document.createElement('div');
-        serviceCard.className = 'service-card';
-        serviceCard.setAttribute('data-key', service.key);
-        
-        serviceCard.innerHTML = `
-          <div class="service-header">
-            <h3><i class="fas fa-concierge-bell"></i> ${service.name}</h3>
-            <p class="service-date"><i class="far fa-calendar-alt"></i> ${formatDate(service.date)}</p>
-          </div>
-          <div class="service-body">
-            <div class="service-price">
-              <i class="fas fa-money-bill-wave"></i> ${service.price} ر.س
-            </div>
-            ${service.details ? `
-            <div class="service-details">
-              <div class="service-details-title">
-                <i class="fas fa-info-circle"></i> تفاصيل الخدمة
-              </div>
-              <div class="service-details-content">
-                ${service.details}
-              </div>
-            </div>
-            ` : ''}
-          </div>
-        `;
-        
-        elements.servicesContainer.appendChild(serviceCard);
-      });
-    }
-
-    // Filter services based on search input
-    function filterServices(searchText) {
-      if (!searchText) {
-        displayServices(allServices);
-        return;
-      }
-
-      const filteredServices = {};
-      Object.keys(allServices).forEach(key => {
-        const service = allServices[key];
-        if (service.name.toLowerCase().includes(searchText)) {
-          filteredServices[key] = service;
-        }
-      });
-
-      displayServices(filteredServices);
-    }
-
-    // Add a new service
-    function addService() {
-      const name = elements.serviceName.value.trim();
-      const date = elements.serviceDate.value;
-      const price = elements.servicePrice.value.trim();
-      const details = elements.serviceDetails.value.trim();
-
-      // Validation
-      if (!name || !date || !price) {
-        showError('الرجاء ملء جميع الحقول المطلوبة');
-        return;
-      }
-
-      if (isNaN(price)) {
-        showError('يجب أن يكون السعر رقماً');
-        return;
-      }
-
-      showLoading(true);
-
-      database.ref('services').push({
-        name,
-        date,
-        price: parseFloat(price),
-        details
-      })
-      .then(() => {
-        showSuccess('تم إضافة الخدمة بنجاح');
-        // Hide form after successful addition
-        elements.addServiceForm.classList.remove('active');
-        // Clear form
-        elements.serviceName.value = '';
-        elements.serviceDate.value = '';
-        elements.servicePrice.value = '';
-        elements.serviceDetails.value = '';
-      })
-      .catch(error => {
-        showError('حدث خطأ أثناء إضافة الخدمة: ' + error.message);
-      })
-      .finally(() => {
-        showLoading(false);
-      });
-    }
-
-    // Open edit modal
-    function openEditModal() {
-      elements.editModal.style.display = 'block';
-      elements.searchServiceName.value = '';
+    if (foundService) {
+      elements.editName.value = foundService.name;
+      elements.editDate.value = foundService.date;
+      elements.editPrice.value = foundService.price;
+      elements.editDetails.value = foundService.details || '';
+      
+      currentServiceKey = foundKey;
+      elements.editForm.style.display = 'block';
+    } else {
+      showError('الخدمة غير موجودة');
       elements.editForm.style.display = 'none';
-      currentServiceKey = null;
+    }
+  }
+
+  // Save edited service
+  function saveEdit() {
+    if (!currentServiceKey) {
+      showError('لم يتم تحديد خدمة للتعديل');
+      return;
     }
 
-    // Close edit modal
-    function closeEditModal() {
-      elements.editModal.style.display = 'none';
+    const newName = elements.editName.value.trim();
+    const newDate = elements.editDate.value;
+    const newPrice = elements.editPrice.value.trim();
+    const newDetails = elements.editDetails.value.trim();
+
+    if (!newName || !newDate || !newPrice) {
+      showError('الرجاء ملء جميع الحقول المطلوبة');
+      return;
     }
 
-    // Search for a service to edit
-    function searchService() {
-      const searchName = elements.searchServiceName.value.trim().toLowerCase();
-
-      if (!searchName) {
-        showError('الرجاء إدخال اسم الخدمة للبحث');
-        return;
-      }
-
-      // Search in services
-      let foundService = null;
-      let foundKey = null;
-
-      for (const [key, service] of Object.entries(allServices)) {
-        if (service.name.toLowerCase() === searchName) {
-          foundService = service;
-          foundKey = key;
-          break;
-        }
-      }
-
-      if (foundService) {
-        elements.editName.value = foundService.name;
-        elements.editDate.value = foundService.date;
-        elements.editPrice.value = foundService.price;
-        elements.editDetails.value = foundService.details || '';
-        
-        currentServiceKey = foundKey;
-        elements.editForm.style.display = 'block';
-      } else {
-        showError('الخدمة غير موجودة');
-        elements.editForm.style.display = 'none';
-      }
+    if (isNaN(newPrice)) {
+      showError('يجب أن يكون السعر رقماً');
+      return;
     }
 
-    // Save edited service
-    function saveEdit() {
-      if (!currentServiceKey) {
-        showError('لم يتم تحديد خدمة للتعديل');
-        return;
-      }
+    showLoading(true);
 
-      const newName = elements.editName.value.trim();
-      const newDate = elements.editDate.value;
-      const newPrice = elements.editPrice.value.trim();
-      const newDetails = elements.editDetails.value.trim();
+    database.ref(`services/${currentServiceKey}`).update({
+      name: newName,
+      date: newDate,
+      price: parseFloat(newPrice),
+      details: newDetails
+    })
+    .then(() => {
+      showSuccess('تم تحديث الخدمة بنجاح');
+      closeEditModal();
+    })
+    .catch(error => {
+      showError('حدث خطأ أثناء تحديث الخدمة: ' + error.message);
+    })
+    .finally(() => {
+      showLoading(false);
+    });
+  }
 
-      if (!newName || !newDate || !newPrice) {
-        showError('الرجاء ملء جميع الحقول المطلوبة');
-        return;
-      }
-
-      if (isNaN(newPrice)) {
-        showError('يجب أن يكون السعر رقماً');
-        return;
-      }
-
-      showLoading(true);
-
-      database.ref(`services/${currentServiceKey}`).update({
-        name: newName,
-        date: newDate,
-        price: parseFloat(newPrice),
-        details: newDetails
-      })
-      .then(() => {
-        showSuccess('تم تحديث الخدمة بنجاح');
-        closeEditModal();
-      })
-      .catch(error => {
-        showError('حدث خطأ أثناء تحديث الخدمة: ' + error.message);
-      })
-      .finally(() => {
-        showLoading(false);
-      });
+  // Delete service
+  function deleteService() {
+    if (!currentServiceKey) {
+      showError('لم يتم تحديد خدمة للحذف');
+      return;
     }
 
-    // Delete service
-    function deleteService() {
-      if (!currentServiceKey) {
-        showError('لم يتم تحديد خدمة للحذف');
-        return;
-      }
+    showLoading(true);
 
-      showLoading(true);
+    database.ref(`services/${currentServiceKey}`).remove()
+    .then(() => {
+      showSuccess('تم حذف الخدمة بنجاح');
+      closeEditModal();
+    })
+    .catch(error => {
+      showError('حدث خطأ أثناء حذف الخدمة: ' + error.message);
+    })
+    .finally(() => {
+      showLoading(false);
+    });
+  }
 
-      database.ref(`services/${currentServiceKey}`).remove()
-      .then(() => {
-        showSuccess('تم حذف الخدمة بنجاح');
-        closeEditModal();
-      })
-      .catch(error => {
-        showError('حدث خطأ أثناء حذف الخدمة: ' + error.message);
-      })
-      .finally(() => {
-        showLoading(false);
-      });
-    }
+  // Show loading spinner
+  function showLoading(show) {
+    elements.loading.style.display = show ? 'block' : 'none';
+  }
 
-    // Show loading spinner
-    function showLoading(show) {
-      elements.loading.style.display = show ? 'block' : 'none';
-    }
-
-    // Show success message
-    function showSuccess(message) {
-      elements.successAlert.textContent = message;
-      elements.successAlert.style.display = 'block';
-      elements.errorAlert.style.display = 'none';
-      
-      setTimeout(() => {
-        elements.successAlert.style.display = 'none';
-      }, 5000);
-    }
-
-    // Show error message
-    function showError(message) {
-      elements.errorAlert.textContent = message;
-      elements.errorAlert.style.display = 'block';
+  // Show success message
+  function showSuccess(message) {
+    elements.successAlert.textContent = message;
+    elements.successAlert.style.display = 'block';
+    elements.errorAlert.style.display = 'none';
+    
+    setTimeout(() => {
       elements.successAlert.style.display = 'none';
-      
-      setTimeout(() => {
-        elements.errorAlert.style.display = 'none';
-      }, 5000);
-    }
+    }, 5000);
+  }
 
-    // Format date for display
-    function formatDate(dateString) {
-      if (!dateString) return 'غير محدد';
-      
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      const date = new Date(dateString);
-      
-      if (isNaN(date.getTime())) {
-        return dateString;
-      }
-      
-      return date.toLocaleDateString('ar-EG', options);
+  // Show error message
+  function showError(message) {
+    elements.errorAlert.textContent = message;
+    elements.errorAlert.style.display = 'block';
+    elements.successAlert.style.display = 'none';
+    
+    setTimeout(() => {
+      elements.errorAlert.style.display = 'none';
+    }, 5000);
+  }
+
+  // Format date for display
+  function formatDate(dateString) {
+    if (!dateString) return 'غير محدد';
+    
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const date = new Date(dateString);
+    
+    if (isNaN(date.getTime())) {
+      return dateString;
     }
-  </script>
+    
+    return date.toLocaleDateString('ar-EG', options);
+  }
+</script>
 </body>
 </html>
