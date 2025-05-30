@@ -660,34 +660,46 @@
     }
   }
   
- .header {
-  max-width: 1200px; /* نفس عرض الـ container */
-  margin: 0 auto 2rem; /* توسيط مع هامش سفلي */
-  border-radius: 15px; /* زوايا مدورة */
-  width: calc(100% - 3rem); /* للحفاظ على المساحة الجانبية */
-}
-
-/* للتأكد من أن الهيدر يبقى ضمن المساحة على الشاشات الكبيرة */
-.container {
+.header {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 1.2rem 1.5rem; /* تقليل الحشوة أكثر */
+  text-align: center;
   position: relative;
+  overflow: hidden;
+  margin: 1rem auto 1.5rem; /* هوامش متوازنة */
+  max-width: 1200px;
+  width: calc(100% - 2rem); /* تقليل المساحة الجانبية */
+  border-radius: 12px !important; /* التأكيد على الحواف المنحنية */
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
 }
 
-
-@keyframes ring {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(10deg); }
-  50% { transform: rotate(-10deg); }
-  75% { transform: rotate(5deg); }
-  100% { transform: rotate(0deg); }
+.header h1 {
+  font-size: 1.8rem; /* تصغير حجم الخط */
+  margin-bottom: 0.3rem; /* تقليل المسافة */
 }
 
-.header h1 i.fa-concierge-bell:hover {
-  animation: ring 0.5s ease;
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%);
 }
 
-
-.header h1 i.fa-concierge-bell:hover {
-  filter: drop-shadow(0 0 8px rgba(255, 152, 0, 0.7));
+/* للتأكد من أن الحواف المنحنية تظهر دائمًا */
+@media (min-width: 768px) {
+  .header {
+    padding: 1rem 1.5rem;
+    margin: 1rem auto 2rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
 }
   
       
