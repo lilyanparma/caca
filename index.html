@@ -859,31 +859,28 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // إنشاء فاتورة المبيعات (معدلة لاستخدام ملفك الخارجي)
-        async function createSalesInvoice() {
-            const year = document.getElementById('sales-year').value;
-            const month = document.getElementById('sales-month').value;
-            const monthName = document.querySelector('#sales-month option:checked').textContent;
-            
-            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
-            
-            try {
-                // تحميل الفاتورة من ملفك الخارجي
-                const frame = document.getElementById('invoiceFrame');
-                frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
-                
-                document.getElementById('modalTitle').textContent = `فاتورة المبيعات - ${monthName} ${year}`;
-                showModal();
-                
-                // يمكنك هنا إضافة حفظ بيانات الفاتورة إلى Firebase إذا كنت بحاجة لذلك
-                // await saveInvoiceToFirebase('sales', year, month, invoiceData);
-                
-                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة المبيعات بنجاح`);
-            } catch (error) {
-                console.error('Error creating sales invoice:', error);
-                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
-            }
-        }
+       // استبدل دالة createSalesInvoice بهذا الكود
+async function createSalesInvoice() {
+    const year = document.getElementById('sales-year').value;
+    const month = document.getElementById('sales-month').value;
+    const monthName = document.querySelector('#sales-month option:checked').textContent;
+    
+    showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
+    
+    try {
+        // تحميل الفاتورة من ملف HTML الخارجي
+        const frame = document.getElementById('invoiceFrame');
+        frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
+        
+        document.getElementById('modalTitle').textContent = `فاتورة المبيعات - ${monthName} ${year}`;
+        showModal();
+        
+        showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة المبيعات بنجاح`);
+    } catch (error) {
+        console.error('Error creating sales invoice:', error);
+        showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
+    }
+}
 
         // إنشاء فاتورة الخدمات (معدلة لاستخدام ملفك الخارجي)
         async function createServicesInvoice() {
@@ -1048,29 +1045,28 @@
                 showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
             }
         }
+        // استبدل دالة createServicesInvoice بهذا الكود
+async function createServicesInvoice() {
+    const year = document.getElementById('services-year').value;
+    const month = document.getElementById('services-month').value;
+    const monthName = document.querySelector('#services-month option:checked').textContent;
+    
+    showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
+    
+    try {
+        // تحميل الفاتورة من ملف HTML الخارجي
+        const frame = document.getElementById('invoiceFrame');
+        frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
         
-        // إنشاء فاتورة الخدمات
-        async function createServicesInvoice() {
-            const year = document.getElementById('services-year').value;
-            const month = document.getElementById('services-month').value;
-            const monthName = document.querySelector('#services-month option:checked').textContent;
-            
-            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
-            
-            try {
-                const invoiceData = await loadInvoicesData('services', year, month);
-                displayInvoice(invoiceData, 'فاتورة الخدمات');
-                showModal();
-                
-                // حفظ الفاتورة في Firebase
-                await saveInvoiceToFirebase('services', year, month, invoiceData);
-                
-                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة الخدمات بنجاح`);
-            } catch (error) {
-                console.error('Error creating services invoice:', error);
-                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة الخدمات');
-            }
-        }
+        document.getElementById('modalTitle').textContent = `فاتورة الخدمات - ${monthName} ${year}`;
+        showModal();
+        
+        showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة الخدمات بنجاح`);
+    } catch (error) {
+        console.error('Error creating services invoice:', error);
+        showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة الخدمات');
+    }
+}
         
         // حفظ الفاتورة في Firebase
         async function saveInvoiceToFirebase(type, year, month, data) {
