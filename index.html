@@ -337,25 +337,220 @@
             padding: 5px;
         }
         
-        /* إضافة iframe لعرض الفواتير */
-        .invoice-frame-container {
-            margin-top: 20px;
+        /* نافذة الفاتورة المنبثقة */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .invoice-modal {
+            background-color: white;
             border-radius: var(--border-radius);
-            overflow: hidden;
-            height: 0;
-            transition: height 0.4s ease-out;
             box-shadow: var(--box-shadow);
+            width: 90%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: auto;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
         }
         
-        .invoice-frame-container.active {
-            height: 70vh;
+        .modal-overlay.active .invoice-modal {
+            transform: translateY(0);
         }
         
-        #invoiceFrame {
-            width: 100%;
-            height: 100%;
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .close-modal {
+            background: none;
             border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            min-height: 300px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-btn i {
+            font-size: 1.1rem;
+        }
+        
+        .save-pdf-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .save-pdf-btn:hover {
+            background-color: #e5177b;
+        }
+        
+        .close-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .close-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        /* تصميم الفاتورة */
+        .invoice-template {
+            font-family: 'Tajawal', sans-serif;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
             background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .invoice-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .invoice-subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        
+        .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .invoice-info-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .invoice-info-label {
+            font-weight: bold;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .invoice-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            text-align: right;
+        }
+        
+        .invoice-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+        }
+        
+        .invoice-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .invoice-totals {
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-bottom: 30px;
+        }
+        
+        .invoice-totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .invoice-totals-label {
+            font-weight: bold;
+        }
+        
+        .invoice-totals-value {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .invoice-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
@@ -405,8 +600,26 @@
                 padding: 14px;
             }
             
-            .invoice-frame-container.active {
-                height: 50vh;
+            .invoice-modal {
+                width: 95%;
+            }
+            
+            .invoice-info {
+                flex-direction: column;
+            }
+            
+            .invoice-table th, .invoice-table td {
+                padding: 8px 5px;
+                font-size: 0.9rem;
+            }
+            
+            .modal-footer {
+                flex-wrap: wrap;
+            }
+            
+            .modal-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
         
@@ -530,6 +743,11 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- مكتبة html2pdf لتحويل الفاتورة إلى PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -563,8 +781,8 @@
                     </div>
                 </div>
                 
-                <button class="report-action-btn" onclick="showSalesInvoice()">
-                    <i class="fas fa-file-invoice"></i> عرض فاتورة المبيعات
+                <button class="report-action-btn" onclick="createSalesInvoice()">
+                    <i class="fas fa-file-invoice"></i> إنشاء فاتورة المبيعات
                 </button>
             </div>
         </div>
@@ -585,15 +803,31 @@
                     </div>
                 </div>
                 
-                <button class="report-action-btn" onclick="showServicesInvoice()">
-                    <i class="fas fa-file-invoice"></i> عرض فاتورة الخدمات
+                <button class="report-action-btn" onclick="createServicesInvoice()">
+                    <i class="fas fa-file-invoice"></i> إنشاء فاتورة الخدمات
                 </button>
             </div>
         </div>
-        
-        <!-- حاوية iframe الجديدة -->
-        <div id="invoiceContainer" class="invoice-frame-container">
-            <iframe id="invoiceFrame" src="about:blank"></iframe>
+    </div>
+    
+    <!-- نافذة الفاتورة المنبثقة (معدلة) -->
+    <div id="invoiceModal" class="modal-overlay">
+        <div class="invoice-modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">فاتورة المبيعات</div>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="invoiceFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn save-pdf-btn" onclick="saveAsPDF()">
+                    <i class="fas fa-file-pdf"></i> حفظ كـ PDF
+                </button>
+                <button class="modal-btn close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i> إغلاق
+                </button>
+            </div>
         </div>
     </div>
     
@@ -609,19 +843,100 @@
     </div>
 
     <script>
-        // استدعاء بيانات الفواتير من ملف خارجي
-        async function loadInvoicesData() {
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
+            authDomain: "pharmacy-system-9def6.firebaseapp.com",
+            databaseURL: "https://pharmacy-system-9def6-default-rtdb.firebaseio.com",
+            projectId: "pharmacy-system-9def6",
+            storageBucket: "pharmacy-system-9def6.appspot.com",
+            messagingSenderId: "630855008414",
+            appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
+            measurementId: "G-LC5NDKP6QZ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // إنشاء فاتورة المبيعات (معدلة لاستخدام ملفك الخارجي)
+        async function createSalesInvoice() {
+            const year = document.getElementById('sales-year').value;
+            const month = document.getElementById('sales-month').value;
+            const monthName = document.querySelector('#sales-month option:checked').textContent;
+            
+            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
+            
             try {
-                const response = await fetch('invoices.json');
-                if (!response.ok) {
-                    throw new Error('خطأ في تحميل بيانات الفواتير');
-                }
-                return await response.json();
+                // تحميل الفاتورة من ملفك الخارجي
+                const frame = document.getElementById('invoiceFrame');
+                frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
+                
+                document.getElementById('modalTitle').textContent = `فاتورة المبيعات - ${monthName} ${year}`;
+                showModal();
+                
+                // يمكنك هنا إضافة حفظ بيانات الفاتورة إلى Firebase إذا كنت بحاجة لذلك
+                // await saveInvoiceToFirebase('sales', year, month, invoiceData);
+                
+                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة المبيعات بنجاح`);
             } catch (error) {
-                console.error('Error loading invoices:', error);
-                showNotification('error', 'خطأ', 'تعذر تحميل بيانات الفواتير');
-                return { sales: [], services: [] };
+                console.error('Error creating sales invoice:', error);
+                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
             }
+        }
+
+        // إنشاء فاتورة الخدمات (معدلة لاستخدام ملفك الخارجي)
+        async function createServicesInvoice() {
+            const year = document.getElementById('services-year').value;
+            const month = document.getElementById('services-month').value;
+            const monthName = document.querySelector('#services-month option:checked').textContent;
+            
+            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
+            
+            try {
+                // تحميل الفاتورة من ملفك الخارجي
+                const frame = document.getElementById('invoiceFrame');
+                frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
+                
+                document.getElementById('modalTitle').textContent = `فاتورة الخدمات - ${monthName} ${year}`;
+                showModal();
+                
+                // يمكنك هنا إضافة حفظ بيانات الفاتورة إلى Firebase إذا كنت بحاجة لذلك
+                // await saveInvoiceToFirebase('services', year, month, invoiceData);
+                
+                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة الخدمات بنجاح`);
+            } catch (error) {
+                console.error('Error creating services invoice:', error);
+                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة الخدمات');
+            }
+        }
+
+        // حفظ كـ PDF (معدلة للعمل مع iframe)
+        function saveAsPDF() {
+            showNotification('info', 'جاري التحميل', 'جارٍ تحويل الفاتورة إلى PDF');
+            
+            const iframe = document.getElementById('invoiceFrame');
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const element = iframeDoc.body;
+            
+            const opt = {
+                margin: 10,
+                filename: document.getElementById('modalTitle').textContent + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    windowWidth: iframeDoc.body.scrollWidth,
+                    windowHeight: iframeDoc.body.scrollHeight
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().from(element).set(opt).save().then(() => {
+                showNotification('success', 'تم الحفظ', 'تم حفظ الفاتورة كـ PDF بنجاح');
+            }).catch(err => {
+                console.error('Error generating PDF:', err);
+                showNotification('error', 'خطأ', 'تعذر حفظ الفاتورة كـ PDF');
+            });
         }
 
         // تهيئة السنوات والأشهر
@@ -697,7 +1012,6 @@
             if (clickedBtn.classList.contains('active')) {
                 clickedBtn.classList.remove('active');
                 targetContent.classList.remove('active');
-                document.getElementById('invoiceContainer').classList.remove('active');
             } else {
                 document.querySelectorAll('.report-content').forEach(content => {
                     content.classList.remove('active');
@@ -712,42 +1026,178 @@
             }
         }
         
-        // عرض فاتورة المبيعات في iframe
-        function showSalesInvoice() {
+        // إنشاء فاتورة المبيعات
+        async function createSalesInvoice() {
             const year = document.getElementById('sales-year').value;
             const month = document.getElementById('sales-month').value;
             const monthName = document.querySelector('#sales-month option:checked').textContent;
             
-            showNotification('info', 'جاري التحميل', `جارٍ تحميل فاتورة المبيعات لشهر ${monthName} ${year}`);
+            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
             
-            const frameContainer = document.getElementById('invoiceContainer');
-            const frame = document.getElementById('invoiceFrame');
-            
-            frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
-            frameContainer.classList.add('active');
-            
-            setTimeout(() => {
-                showNotification('success', 'تم التحميل', `تم تحميل فاتورة المبيعات بنجاح`);
-            }, 1000);
+            try {
+                const invoiceData = await loadInvoicesData('sales', year, month);
+                displayInvoice(invoiceData, 'فاتورة المبيعات');
+                showModal();
+                
+                // حفظ الفاتورة في Firebase
+                await saveInvoiceToFirebase('sales', year, month, invoiceData);
+                
+                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة المبيعات بنجاح`);
+            } catch (error) {
+                console.error('Error creating sales invoice:', error);
+                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
+            }
         }
         
-        // عرض فاتورة الخدمات في iframe
-        function showServicesInvoice() {
+        // إنشاء فاتورة الخدمات
+        async function createServicesInvoice() {
             const year = document.getElementById('services-year').value;
             const month = document.getElementById('services-month').value;
             const monthName = document.querySelector('#services-month option:checked').textContent;
             
-            showNotification('info', 'جاري التحميل', `جارٍ تحميل فاتورة الخدمات لشهر ${monthName} ${year}`);
+            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
             
-            const frameContainer = document.getElementById('invoiceContainer');
-            const frame = document.getElementById('invoiceFrame');
+            try {
+                const invoiceData = await loadInvoicesData('services', year, month);
+                displayInvoice(invoiceData, 'فاتورة الخدمات');
+                showModal();
+                
+                // حفظ الفاتورة في Firebase
+                await saveInvoiceToFirebase('services', year, month, invoiceData);
+                
+                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة الخدمات بنجاح`);
+            } catch (error) {
+                console.error('Error creating services invoice:', error);
+                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة الخدمات');
+            }
+        }
+        
+        // حفظ الفاتورة في Firebase
+        async function saveInvoiceToFirebase(type, year, month, data) {
+            try {
+                await database.ref(`invoices/${type}/${year}/${month}`).set(data);
+                console.log('Invoice saved to Firebase');
+            } catch (error) {
+                console.error('Error saving invoice:', error);
+                throw error;
+            }
+        }
+        
+        // عرض الفاتورة في النافذة المنبثقة
+        function displayInvoice(data, title) {
+            document.getElementById('modalTitle').textContent = title;
+            const invoiceContent = document.getElementById('invoiceContent');
             
-            frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
-            frameContainer.classList.add('active');
+            // إنشاء محتوى الفاتورة
+            let html = `
+                <div class="invoice-header">
+                    <h1 class="invoice-title">${title}</h1>
+                    <h2 class="invoice-subtitle">${data.pharmacyInfo.name}</h2>
+                    <p>${data.pharmacyInfo.address} | هاتف: ${data.pharmacyInfo.phone} | ترخيص: ${data.pharmacyInfo.license}</p>
+                </div>
+                
+                <div class="invoice-info">
+                    <div class="invoice-info-item">
+                        <div class="invoice-info-label">رقم الفاتورة:</div>
+                        <div>${data.invoiceNumber}</div>
+                    </div>
+                    <div class="invoice-info-item">
+                        <div class="invoice-info-label">تاريخ الفاتورة:</div>
+                        <div>${data.date}</div>
+                    </div>
+                    <div class="invoice-info-item">
+                        <div class="invoice-info-label">نوع الفاتورة:</div>
+                        <div>${data.type}</div>
+                    </div>
+                    <div class="invoice-info-item">
+                        <div class="invoice-info-label">الفترة:</div>
+                        <div>${data.period}</div>
+                    </div>
+                </div>
+                
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>الوصف</th>
+                            <th>الكمية</th>
+                            <th>السعر</th>
+                            <th>الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
             
-            setTimeout(() => {
-                showNotification('success', 'تم التحميل', `تم تحميل فاتورة الخدمات بنجاح`);
-            }, 1000);
+            data.items.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.price.toFixed(2)} ر.س</td>
+                        <td>${item.total.toFixed(2)} ر.س</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                
+                <div class="invoice-totals">
+                    <div class="invoice-totals-row">
+                        <div class="invoice-totals-label">المجموع الفرعي:</div>
+                        <div class="invoice-totals-value">${data.subtotal.toFixed(2)} ر.س</div>
+                    </div>
+                    <div class="invoice-totals-row">
+                        <div class="invoice-totals-label">الضريبة (15%):</div>
+                        <div class="invoice-totals-value">${data.tax.toFixed(2)} ر.س</div>
+                    </div>
+                    <div class="invoice-totals-row">
+                        <div class="invoice-totals-label">المجموع الكلي:</div>
+                        <div class="invoice-totals-value">${data.total.toFixed(2)} ر.س</div>
+                    </div>
+                </div>
+                
+                <div class="invoice-footer">
+                    <p>شكراً لتعاملكم مع ${data.pharmacyInfo.name}</p>
+                    <p>هذه الفاتورة تم إنشاؤها تلقائياً ولا تحتاج إلى توقيع</p>
+                </div>
+            `;
+            
+            invoiceContent.innerHTML = html;
+        }
+        
+        // عرض النافذة المنبثقة
+        function showModal() {
+            document.getElementById('invoiceModal').classList.add('active');
+        }
+        
+        // إغلاق النافذة المنبثقة
+        function closeModal() {
+            document.getElementById('invoiceModal').classList.remove('active');
+        }
+        
+        // حفظ الفاتورة كـ PDF
+        function saveAsPDF() {
+            const element = document.getElementById('invoiceContent');
+            const opt = {
+                margin: 10,
+                filename: document.getElementById('modalTitle').textContent + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            showNotification('info', 'جاري التحميل', 'جارٍ تحويل الفاتورة إلى PDF');
+            
+            // تحويل الفاتورة إلى PDF
+            html2pdf().from(element).set(opt).save().then(() => {
+                showNotification('success', 'تم الحفظ', 'تم حفظ الفاتورة كـ PDF بنجاح');
+            }).catch(err => {
+                console.error('Error generating PDF:', err);
+                showNotification('error', 'خطأ', 'تعذر حفظ الفاتورة كـ PDF');
+            });
         }
         
         // عرض الإشعارات
@@ -777,6 +1227,13 @@
         // تهيئة الصفحة عند التحميل
         document.addEventListener('DOMContentLoaded', function() {
             initDateSelectors();
+            
+            // إغلاق النافذة المنبثقة عند النقر خارجها
+            document.getElementById('invoiceModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
         });
     </script>
 </body>
