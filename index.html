@@ -842,395 +842,240 @@
         </button>
     </div>
 
-    <script>
-        // تهيئة Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
-            authDomain: "pharmacy-system-9def6.firebaseapp.com",
-            databaseURL: "https://pharmacy-system-9def6-default-rtdb.firebaseio.com",
-            projectId: "pharmacy-system-9def6",
-            storageBucket: "pharmacy-system-9def6.appspot.com",
-            messagingSenderId: "630855008414",
-            appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
-            measurementId: "G-LC5NDKP6QZ"
+<script>
+    // تهيئة Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
+        authDomain: "pharmacy-system-9def6.firebaseapp.com",
+        databaseURL: "https://pharmacy-system-9def6-default-rtdb.firebaseio.com",
+        projectId: "pharmacy-system-9def6",
+        storageBucket: "pharmacy-system-9def6.appspot.com",
+        messagingSenderId: "630855008414",
+        appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
+        measurementId: "G-LC5NDKP6QZ"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // إنشاء فاتورة المبيعات
+    async function createSalesInvoice() {
+        const year = document.getElementById('sales-year').value;
+        const month = document.getElementById('sales-month').value;
+        const monthName = document.querySelector('#sales-month option:checked').textContent;
+        
+        showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
+        
+        try {
+            // تحميل الفاتورة من ملف HTML الخارجي
+            const frame = document.getElementById('invoiceFrame');
+            frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
+            
+            document.getElementById('modalTitle').textContent = `فاتورة المبيعات - ${monthName} ${year}`;
+            showModal();
+            
+            showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة المبيعات بنجاح`);
+        } catch (error) {
+            console.error('Error creating sales invoice:', error);
+            showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
+        }
+    }
+
+    // إنشاء فاتورة الخدمات
+    async function createServicesInvoice() {
+        const year = document.getElementById('services-year').value;
+        const month = document.getElementById('services-month').value;
+        const monthName = document.querySelector('#services-month option:checked').textContent;
+        
+        showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
+        
+        try {
+            // تحميل الفاتورة من ملف HTML الخارجي
+            const frame = document.getElementById('invoiceFrame');
+            frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
+            
+            document.getElementById('modalTitle').textContent = `فاتورة الخدمات - ${monthName} ${year}`;
+            showModal();
+            
+            showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة الخدمات بنجاح`);
+        } catch (error) {
+            console.error('Error creating services invoice:', error);
+            showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة الخدمات');
+        }
+    }
+
+    // حفظ كـ PDF (معدلة للعمل مع iframe)
+    function saveAsPDF() {
+        showNotification('info', 'جاري التحميل', 'جارٍ تحويل الفاتورة إلى PDF');
+        
+        const iframe = document.getElementById('invoiceFrame');
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const element = iframeDoc.body;
+        
+        const opt = {
+            margin: 10,
+            filename: document.getElementById('modalTitle').textContent + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2,
+                windowWidth: iframeDoc.body.scrollWidth,
+                windowHeight: iframeDoc.body.scrollHeight
+            },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-       // استبدل دالة createSalesInvoice بهذا الكود
-async function createSalesInvoice() {
-    const year = document.getElementById('sales-year').value;
-    const month = document.getElementById('sales-month').value;
-    const monthName = document.querySelector('#sales-month option:checked').textContent;
-    
-    showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
-    
-    try {
-        // تحميل الفاتورة من ملف HTML الخارجي
-        const frame = document.getElementById('invoiceFrame');
-        frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
         
-        document.getElementById('modalTitle').textContent = `فاتورة المبيعات - ${monthName} ${year}`;
-        showModal();
-        
-        showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة المبيعات بنجاح`);
-    } catch (error) {
-        console.error('Error creating sales invoice:', error);
-        showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
-    }
-}
-
-        // إنشاء فاتورة الخدمات (معدلة لاستخدام ملفك الخارجي)
-        async function createServicesInvoice() {
-            const year = document.getElementById('services-year').value;
-            const month = document.getElementById('services-month').value;
-            const monthName = document.querySelector('#services-month option:checked').textContent;
-            
-            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
-            
-            try {
-                // تحميل الفاتورة من ملفك الخارجي
-                const frame = document.getElementById('invoiceFrame');
-                frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
-                
-                document.getElementById('modalTitle').textContent = `فاتورة الخدمات - ${monthName} ${year}`;
-                showModal();
-                
-                // يمكنك هنا إضافة حفظ بيانات الفاتورة إلى Firebase إذا كنت بحاجة لذلك
-                // await saveInvoiceToFirebase('services', year, month, invoiceData);
-                
-                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة الخدمات بنجاح`);
-            } catch (error) {
-                console.error('Error creating services invoice:', error);
-                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة الخدمات');
-            }
-        }
-
-        // حفظ كـ PDF (معدلة للعمل مع iframe)
-        function saveAsPDF() {
-            showNotification('info', 'جاري التحميل', 'جارٍ تحويل الفاتورة إلى PDF');
-            
-            const iframe = document.getElementById('invoiceFrame');
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-            const element = iframeDoc.body;
-            
-            const opt = {
-                margin: 10,
-                filename: document.getElementById('modalTitle').textContent + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    windowWidth: iframeDoc.body.scrollWidth,
-                    windowHeight: iframeDoc.body.scrollHeight
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().from(element).set(opt).save().then(() => {
-                showNotification('success', 'تم الحفظ', 'تم حفظ الفاتورة كـ PDF بنجاح');
-            }).catch(err => {
-                console.error('Error generating PDF:', err);
-                showNotification('error', 'خطأ', 'تعذر حفظ الفاتورة كـ PDF');
-            });
-        }
-
-        // تهيئة السنوات والأشهر
-        function initDateSelectors() {
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth() + 1;
-            const startYear = 2023;
-            
-            const yearSelectors = document.querySelectorAll('.year-selector');
-            yearSelectors.forEach(select => {
-                select.innerHTML = '';
-                for (let year = startYear; year <= currentYear; year++) {
-                    const option = document.createElement('option');
-                    option.value = year;
-                    option.textContent = year;
-                    select.appendChild(option);
-                }
-                select.value = currentYear;
-                
-                const monthId = select.id === 'sales-year' ? 'sales-month' : 'services-month';
-                updateMonths(select, monthId);
-            });
-        }
-
-        // تحديث قائمة الأشهر عند تغيير السنة
-        function updateMonths(yearSelect, monthId) {
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth() + 1;
-            const selectedYear = parseInt(yearSelect.value);
-            
-            const monthSelector = document.getElementById(monthId);
-            const arabicMonths = [
-                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-            ];
-            
-            monthSelector.innerHTML = '';
-            
-            for (let i = 0; i < 12; i++) {
-                const monthValue = i + 1;
-                const option = document.createElement('option');
-                option.value = monthValue;
-                option.textContent = arabicMonths[i];
-                
-                if (selectedYear === currentYear && monthValue > currentMonth) {
-                    option.disabled = true;
-                    option.style.display = 'none';
-                }
-                
-                if (selectedYear === currentYear && monthValue === currentMonth) {
-                    option.classList.add('current-month');
-                    option.style.color = 'var(--current-month-color)';
-                    option.style.fontWeight = 'bold';
-                }
-                
-                monthSelector.appendChild(option);
-            }
-            
-            if (selectedYear === currentYear) {
-                monthSelector.value = currentMonth;
-            } else {
-                monthSelector.value = 1;
-            }
-        }
-
-        // تبديل بين التقارير مع إمكانية الإغلاق
-        function toggleReport(reportId) {
-            const clickedBtn = event.currentTarget;
-            const targetContent = document.getElementById(reportId);
-            
-            if (clickedBtn.classList.contains('active')) {
-                clickedBtn.classList.remove('active');
-                targetContent.classList.remove('active');
-            } else {
-                document.querySelectorAll('.report-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                
-                document.querySelectorAll('.report-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                clickedBtn.classList.add('active');
-                targetContent.classList.add('active');
-            }
-        }
-        
-        // إنشاء فاتورة المبيعات
-        async function createSalesInvoice() {
-            const year = document.getElementById('sales-year').value;
-            const month = document.getElementById('sales-month').value;
-            const monthName = document.querySelector('#sales-month option:checked').textContent;
-            
-            showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
-            
-            try {
-                const invoiceData = await loadInvoicesData('sales', year, month);
-                displayInvoice(invoiceData, 'فاتورة المبيعات');
-                showModal();
-                
-                // حفظ الفاتورة في Firebase
-                await saveInvoiceToFirebase('sales', year, month, invoiceData);
-                
-                showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة المبيعات بنجاح`);
-            } catch (error) {
-                console.error('Error creating sales invoice:', error);
-                showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة المبيعات');
-            }
-        }
-        // استبدل دالة createServicesInvoice بهذا الكود
-async function createServicesInvoice() {
-    const year = document.getElementById('services-year').value;
-    const month = document.getElementById('services-month').value;
-    const monthName = document.querySelector('#services-month option:checked').textContent;
-    
-    showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
-    
-    try {
-        // تحميل الفاتورة من ملف HTML الخارجي
-        const frame = document.getElementById('invoiceFrame');
-        frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
-        
-        document.getElementById('modalTitle').textContent = `فاتورة الخدمات - ${monthName} ${year}`;
-        showModal();
-        
-        showNotification('success', 'تم الإنشاء', `تم إنشاء فاتورة الخدمات بنجاح`);
-    } catch (error) {
-        console.error('Error creating services invoice:', error);
-        showNotification('error', 'خطأ', 'تعذر إنشاء فاتورة الخدمات');
-    }
-}
-        
-        // حفظ الفاتورة في Firebase
-        async function saveInvoiceToFirebase(type, year, month, data) {
-            try {
-                await database.ref(`invoices/${type}/${year}/${month}`).set(data);
-                console.log('Invoice saved to Firebase');
-            } catch (error) {
-                console.error('Error saving invoice:', error);
-                throw error;
-            }
-        }
-        
-        // عرض الفاتورة في النافذة المنبثقة
-        function displayInvoice(data, title) {
-            document.getElementById('modalTitle').textContent = title;
-            const invoiceContent = document.getElementById('invoiceContent');
-            
-            // إنشاء محتوى الفاتورة
-            let html = `
-                <div class="invoice-header">
-                    <h1 class="invoice-title">${title}</h1>
-                    <h2 class="invoice-subtitle">${data.pharmacyInfo.name}</h2>
-                    <p>${data.pharmacyInfo.address} | هاتف: ${data.pharmacyInfo.phone} | ترخيص: ${data.pharmacyInfo.license}</p>
-                </div>
-                
-                <div class="invoice-info">
-                    <div class="invoice-info-item">
-                        <div class="invoice-info-label">رقم الفاتورة:</div>
-                        <div>${data.invoiceNumber}</div>
-                    </div>
-                    <div class="invoice-info-item">
-                        <div class="invoice-info-label">تاريخ الفاتورة:</div>
-                        <div>${data.date}</div>
-                    </div>
-                    <div class="invoice-info-item">
-                        <div class="invoice-info-label">نوع الفاتورة:</div>
-                        <div>${data.type}</div>
-                    </div>
-                    <div class="invoice-info-item">
-                        <div class="invoice-info-label">الفترة:</div>
-                        <div>${data.period}</div>
-                    </div>
-                </div>
-                
-                <table class="invoice-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>الوصف</th>
-                            <th>الكمية</th>
-                            <th>السعر</th>
-                            <th>الإجمالي</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            data.items.forEach(item => {
-                html += `
-                    <tr>
-                        <td>${item.id}</td>
-                        <td>${item.name}</td>
-                        <td>${item.quantity}</td>
-                        <td>${item.price.toFixed(2)} ر.س</td>
-                        <td>${item.total.toFixed(2)} ر.س</td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                    </tbody>
-                </table>
-                
-                <div class="invoice-totals">
-                    <div class="invoice-totals-row">
-                        <div class="invoice-totals-label">المجموع الفرعي:</div>
-                        <div class="invoice-totals-value">${data.subtotal.toFixed(2)} ر.س</div>
-                    </div>
-                    <div class="invoice-totals-row">
-                        <div class="invoice-totals-label">الضريبة (15%):</div>
-                        <div class="invoice-totals-value">${data.tax.toFixed(2)} ر.س</div>
-                    </div>
-                    <div class="invoice-totals-row">
-                        <div class="invoice-totals-label">المجموع الكلي:</div>
-                        <div class="invoice-totals-value">${data.total.toFixed(2)} ر.س</div>
-                    </div>
-                </div>
-                
-                <div class="invoice-footer">
-                    <p>شكراً لتعاملكم مع ${data.pharmacyInfo.name}</p>
-                    <p>هذه الفاتورة تم إنشاؤها تلقائياً ولا تحتاج إلى توقيع</p>
-                </div>
-            `;
-            
-            invoiceContent.innerHTML = html;
-        }
-        
-        // عرض النافذة المنبثقة
-        function showModal() {
-            document.getElementById('invoiceModal').classList.add('active');
-        }
-        
-        // إغلاق النافذة المنبثقة
-        function closeModal() {
-            document.getElementById('invoiceModal').classList.remove('active');
-        }
-        
-        // حفظ الفاتورة كـ PDF
-        function saveAsPDF() {
-            const element = document.getElementById('invoiceContent');
-            const opt = {
-                margin: 10,
-                filename: document.getElementById('modalTitle').textContent + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            showNotification('info', 'جاري التحميل', 'جارٍ تحويل الفاتورة إلى PDF');
-            
-            // تحويل الفاتورة إلى PDF
-            html2pdf().from(element).set(opt).save().then(() => {
-                showNotification('success', 'تم الحفظ', 'تم حفظ الفاتورة كـ PDF بنجاح');
-            }).catch(err => {
-                console.error('Error generating PDF:', err);
-                showNotification('error', 'خطأ', 'تعذر حفظ الفاتورة كـ PDF');
-            });
-        }
-        
-        // عرض الإشعارات
-        function showNotification(type, title, message) {
-            const notification = document.getElementById('notification');
-            const notificationTitle = document.getElementById('notification-title');
-            const notificationMessage = document.getElementById('notification-message');
-            
-            notification.classList.remove('success', 'warning', 'error', 'info');
-            notification.classList.add(type);
-            
-            notificationTitle.textContent = title;
-            notificationMessage.textContent = message;
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
-        }
-        
-        // إخفاء الإشعار يدوياً
-        function hideNotification() {
-            document.getElementById('notification').classList.remove('show');
-        }
-        
-        // تهيئة الصفحة عند التحميل
-        document.addEventListener('DOMContentLoaded', function() {
-            initDateSelectors();
-            
-            // إغلاق النافذة المنبثقة عند النقر خارجها
-            document.getElementById('invoiceModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeModal();
-                }
-            });
+        html2pdf().from(element).set(opt).save().then(() => {
+            showNotification('success', 'تم الحفظ', 'تم حفظ الفاتورة كـ PDF بنجاح');
+        }).catch(err => {
+            console.error('Error generating PDF:', err);
+            showNotification('error', 'خطأ', 'تعذر حفظ الفاتورة كـ PDF');
         });
+    }
+
+    // تهيئة السنوات والأشهر
+    function initDateSelectors() {
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+        const startYear = 2023;
+        
+        const yearSelectors = document.querySelectorAll('.year-selector');
+        yearSelectors.forEach(select => {
+            select.innerHTML = '';
+            for (let year = startYear; year <= currentYear; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                select.appendChild(option);
+            }
+            select.value = currentYear;
+            
+            const monthId = select.id === 'sales-year' ? 'sales-month' : 'services-month';
+            updateMonths(select, monthId);
+        });
+    }
+
+    // تحديث قائمة الأشهر عند تغيير السنة
+    function updateMonths(yearSelect, monthId) {
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+        const selectedYear = parseInt(yearSelect.value);
+        
+        const monthSelector = document.getElementById(monthId);
+        const arabicMonths = [
+            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+        ];
+        
+        monthSelector.innerHTML = '';
+        
+        for (let i = 0; i < 12; i++) {
+            const monthValue = i + 1;
+            const option = document.createElement('option');
+            option.value = monthValue;
+            option.textContent = arabicMonths[i];
+            
+            if (selectedYear === currentYear && monthValue > currentMonth) {
+                option.disabled = true;
+                option.style.display = 'none';
+            }
+            
+            if (selectedYear === currentYear && monthValue === currentMonth) {
+                option.classList.add('current-month');
+                option.style.color = 'var(--current-month-color)';
+                option.style.fontWeight = 'bold';
+            }
+            
+            monthSelector.appendChild(option);
+        }
+        
+        if (selectedYear === currentYear) {
+            monthSelector.value = currentMonth;
+        } else {
+            monthSelector.value = 1;
+        }
+    }
+
+    // تبديل بين التقارير مع إمكانية الإغلاق
+    function toggleReport(reportId) {
+        const clickedBtn = event.currentTarget;
+        const targetContent = document.getElementById(reportId);
+        
+        if (clickedBtn.classList.contains('active')) {
+            clickedBtn.classList.remove('active');
+            targetContent.classList.remove('active');
+        } else {
+            document.querySelectorAll('.report-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.report-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            clickedBtn.classList.add('active');
+            targetContent.classList.add('active');
+        }
+    }
+    
+    // حفظ الفاتورة في Firebase
+    async function saveInvoiceToFirebase(type, year, month, data) {
+        try {
+            await database.ref(`invoices/${type}/${year}/${month}`).set(data);
+            console.log('Invoice saved to Firebase');
+        } catch (error) {
+            console.error('Error saving invoice:', error);
+            throw error;
+        }
+    }
+    
+    // عرض النافذة المنبثقة
+    function showModal() {
+        document.getElementById('invoiceModal').classList.add('active');
+    }
+    
+    // إغلاق النافذة المنبثقة
+    function closeModal() {
+        document.getElementById('invoiceModal').classList.remove('active');
+    }
+    
+    // عرض الإشعارات
+    function showNotification(type, title, message) {
+        const notification = document.getElementById('notification');
+        const notificationTitle = document.getElementById('notification-title');
+        const notificationMessage = document.getElementById('notification-message');
+        
+        notification.classList.remove('success', 'warning', 'error', 'info');
+        notification.classList.add(type);
+        
+        notificationTitle.textContent = title;
+        notificationMessage.textContent = message;
+        
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 5000);
+    }
+    
+    // إخفاء الإشعار يدوياً
+    function hideNotification() {
+        document.getElementById('notification').classList.remove('show');
+    }
+    
+    // تهيئة الصفحة عند التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+        initDateSelectors();
+        
+        // إغلاق النافذة المنبثقة عند النقر خارجها
+        document.getElementById('invoiceModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    });
     </script>
 </body>
 </html>
