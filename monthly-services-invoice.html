@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>فاتورة الخدمات الشهرية</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      width: 100%;
+      font-family: 'Tahoma', 'DejaVu Sans', 'Arial', sans-serif;
+      background-color: white;
+      direction: rtl;
+      padding: 20px;
+    }
+
+    /* تصميم الفاتورة */
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #764ba2;
+    }
+
+    .company-name {
+      font-size: 24px;
+      font-weight: bold;
+      color: #764ba2;
+      margin-bottom: 10px;
+    }
+
+    .invoice-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: right;
+    }
+
+    th {
+      background-color: #764ba2;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .total-row td {
+      font-weight: bold;
+      background-color: #f0e6ff;
+    }
+
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #764ba2;
+      font-style: italic;
+      color: #555;
+      text-align: center;
+    }
+
+    .service-status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .status-paid {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .client-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="invoiceContent">
+    <div class="header">
+      <div class="company-name">صيدلية المستقبل</div>
+      <h2>تقرير الخدمات الإضافية</h2>
+      <div class="invoice-info">
+        <div><strong>الفترة:</strong> <span id="reportPeriod"></span></div>
+        <div><strong>تاريخ الإصدار:</strong> <span id="todayDate"></span></div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>الخدمة</th>
+          <th>التصنيف</th>
+          <th>العميل</th>
+          <th>التاريخ</th>
+          <th>الحالة</th>
+          <th>السعر</th>
+        </tr>
+      </thead>
+      <tbody id="servicesTableBody"></tbody>
+    </table>
+
+    <table style="margin-top: 20px;">
+      <tbody>
+        <tr class="total-row">
+          <td colspan="5"><strong>إجمالي الخدمات المقدمة</strong></td>
+          <td colspan="2"><span dir="ltr" id="totalServices"></span> ر.س</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="5"><strong>إجمالي الخدمات المدفوعة</strong></td>
+          <td colspan="2"><span dir="ltr" id="paidServices"></span> ر.س</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="5"><strong>إجمالي الخدمات المعلقة</strong></td>
+          <td colspan="2"><span dir="ltr" id="pendingServices"></span> ر.س</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <p>شكرًا لتعاملكم مع صيدلية المستقبل</p>
+      <p>للاستفسارات: هاتف: 0123456789 - البريد الإلكتروني: info@future-pharmacy.com</p>
+    </div>
+  </div>
+
+  <script>
+    // استقبال البيانات من الصفحة الرئيسية
+    window.addEventListener('message', function(event) {
+      if (event.data.action === 'generateServices') {
+        generateReport(event.data.year, event.data.month);
+      }
+    });
+
+    // توليد التقرير بناء على السنة والشهر
+    async function generateReport(year, month) {
+      try {
+        // جلب البيانات من Firebase
+        const servicesSnapshot = await firebase.database().ref("services").once("value");
+        const clientsSnapshot = await firebase.database().ref("clients").once("value");
+        
+        const clients = clientsSnapshot.val() || {};
+        const allServices = servicesSnapshot.val() || {};
+        
+        let services = [];
+        let totalAmount = 0;
+        let paidAmount = 0;
+        let pendingAmount = 0;
+        
+        // حساب تاريخ البداية والنهاية
+        const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+        const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+        const reportTitle = `تقرير شهر ${getArabicMonthName(month)} ${year}`;
+        
+        // تصفية الخدمات حسب التاريخ
+        for (const [key, service] of Object.entries(allServices)) {
+          const serviceDate = service.date;
+          
+          if (serviceDate >= startDate && serviceDate <= endDate) {
+            const client = service.patientId ? clients[service.patientId] : null;
+            
+            services.push({
+              ...service,
+              id: key,
+              clientName: client ? client.name : 'غير مرتبط',
+              clientPhone: client ? client.phone : ''
+            });
+            
+            totalAmount += parseFloat(service.price) || 0;
+            
+            if (service.status === 'paid') {
+              paidAmount += parseFloat(service.price) || 0;
+            } else {
+              pendingAmount += parseFloat(service.price) || 0;
+            }
+          }
+        }
+        
+        if (services.length === 0) {
+          window.parent.postMessage({
+            type: 'reportError',
+            message: 'لا توجد خدمات مسجلة لهذا الشهر'
+          }, '*');
+          return;
+        }
+        
+        // ترتيب الخدمات حسب التاريخ
+        services.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // تحديث محتوى الفاتورة
+        document.getElementById("reportPeriod").innerText = reportTitle;
+        document.getElementById("todayDate").innerText = formatDate(new Date().toISOString().split('T')[0]);
+        document.getElementById("totalServices").innerHTML = `<span dir="ltr">${totalAmount.toFixed(2)}</span>`;
+        document.getElementById("paidServices").innerHTML = `<span dir="ltr">${paidAmount.toFixed(2)}</span>`;
+        document.getElementById("pendingServices").innerHTML = `<span dir="ltr">${pendingAmount.toFixed(2)}</span>`;
+        
+        // تعبئة جدول الخدمات
+        const tbody = document.getElementById("servicesTableBody");
+        tbody.innerHTML = "";
+        
+        services.forEach((service, index) => {
+          const row = document.createElement("tr");
+          const statusClass = service.status === 'paid' ? 'status-paid' : 'status-pending';
+          const statusText = service.status === 'paid' ? 'مدفوعة' : 'معلقة';
+          
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>
+              ${service.name}
+              ${service.clientName !== 'غير مرتبط' ? 
+                `<div class="client-info">${service.clientName} - ${service.clientPhone}</div>` : ''}
+            </td>
+            <td>${service.category || 'غير محدد'}</td>
+            <td>${service.clientName}</td>
+            <td>${formatDate(service.date)}</td>
+            <td><span class="service-status ${statusClass}">${statusText}</span></td>
+            <td><span dir="ltr">${parseFloat(service.price).toFixed(2)}</span> ر.س</td>
+          `;
+          tbody.appendChild(row);
+        });
+        
+        // إعلام الصفحة الرئيسية بأن التقرير جاهز
+        window.parent.postMessage({
+          type: 'reportReady',
+          reportType: 'services',
+          month: reportTitle
+        }, '*');
+        
+      } catch (error) {
+        console.error(error);
+        window.parent.postMessage({
+          type: 'reportError',
+          message: 'حدث خطأ أثناء إنشاء التقرير'
+        }, '*');
+      }
+    }
+    
+    // دالة مساعدة لتنسيق التاريخ
+    function formatDate(dateStr) {
+      if (!dateStr) return 'غير محدد';
+      
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+      
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('ar-EG', options);
+    }
+    
+    // دالة مساعدة للحصول على اسم الشهر العربي
+    function getArabicMonthName(month) {
+      const months = [
+        'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+        'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+      ];
+      return months[month - 1] || '';
+    }
+
+    // تهيئة Firebase عند الحاجة
+    if (typeof firebase === 'undefined') {
+      const firebaseConfig = {
+        apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
+        authDomain: "pharmacy-system-9def6.firebaseapp.com",
+        databaseURL: "https://pharmacy-system-9def6-default-rtdb.firebaseio.com",
+        projectId: "pharmacy-system-9def6",
+        storageBucket: "pharmacy-system-9def6.appspot.com",
+        messagingSenderId: "630855008414",
+        appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
+        measurementId: "G-LC5NDKP6QZ"
+      };
+      firebase.initializeApp(firebaseConfig);
+    }
+  </script>
+</body>
+</html>
