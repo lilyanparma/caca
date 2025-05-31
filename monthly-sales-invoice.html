@@ -28,6 +28,7 @@
       background-color: #f0f2f5;
       color: var(--dark);
       line-height: 1.6;
+      padding: 20px;
     }
     
     .invoice-container {
@@ -38,7 +39,6 @@
       background: white;
     }
     
-    /* تصميم الرأس */
     .invoice-header {
       text-align: center;
       margin-bottom: 30px;
@@ -70,7 +70,6 @@
       margin-bottom: 10px;
     }
     
-    /* تصميم الجدول */
     .invoice-table {
       width: 100%;
       border-collapse: collapse;
@@ -93,7 +92,6 @@
       background-color: #f9f9f9;
     }
     
-    /* تصميم المجاميع */
     .totals-table {
       width: 100%;
       margin: 30px 0;
@@ -119,7 +117,6 @@
       color: #721c24;
     }
     
-    /* التذييل */
     .invoice-footer {
       margin-top: 40px;
       padding-top: 20px;
@@ -128,7 +125,6 @@
       color: var(--gray);
     }
     
-    /* طباعة الفاتورة */
     @media print {
       body {
         background: white;
@@ -145,6 +141,7 @@
       }
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="invoice-container" id="invoiceContent">
@@ -200,29 +197,17 @@
   </div>
 
   <script>
-    // إعداد Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
-      authDomain: "pharmacy-system-9def6.firebaseapp.com",
-      databaseURL: "https://pharmacy-system-9def6-default-rtdb.firebaseio.com",
-      projectId: "pharmacy-system-9def6",
-      storageBucket: "pharmacy-system-9def6.appspot.com",
-      messagingSenderId: "630855008414",
-      appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
-      measurementId: "G-LC5NDKP6QZ"
-    };
+    // استقبال البيانات من الصفحة الرئيسية
+    window.addEventListener('message', function(event) {
+      if (event.data.action === 'generateSales') {
+        generateMonthlySalesReport(event.data.year, event.data.month);
+      }
+    });
 
-    // تهيئة Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    async function generateMonthlySalesReport() {
-      const now = new Date();
-      const month = now.toISOString().slice(0, 7); // مثل: "2025-04"
-      
+    async function generateMonthlySalesReport(year, month) {
       try {
         // 1. جلب بيانات المنتجات
-        const productsSnapshot = await database.ref("products").once("value");
+        const productsSnapshot = await firebase.database().ref("products").once("value");
         let totalSales = 0;
         let totalCost = 0;
         let soldProducts = [];
@@ -254,7 +239,8 @@
         }
 
         // 2. جلب المصاريف الشهرية
-        const expensesSnapshot = await database.ref("expenses/" + month).once("value");
+        const monthStr = `${year}-${month.toString().padStart(2, '0')}`;
+        const expensesSnapshot = await firebase.database().ref("expenses/" + monthStr).once("value");
         const expensesData = expensesSnapshot.val() || {};
         const totalExpenses = parseFloat(expensesData.amount) || 0;
 
@@ -266,9 +252,9 @@
           "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
           "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
         ];
-        const arMonth = `${monthsAr[now.getMonth()]} ${now.getFullYear()}`;
+        const arMonth = `${monthsAr[month-1]} ${year}`;
         const today = new Date().toLocaleDateString("ar-EG");
-        const invoiceNumber = `INV-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+        const invoiceNumber = `INV-${year}${month.toString().padStart(2, '0')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
 
         // 5. عرض البيانات في الفاتورة
         document.getElementById("arMonth").textContent = arMonth;
@@ -305,27 +291,36 @@
           tbody.appendChild(row);
         });
 
-        // 6. إنشاء PDF
-        const element = document.getElementById("invoiceContent");
-        const opt = {
-          margin: 10,
-          filename: `فاتورة_مبيعات_${arMonth.replace(/\s+/g, '_')}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        // استخدام html2pdf.js لإنشاء PDF
-        await html2pdf().set(opt).from(element).save();
+        // إرسال إشعار للصفحة الرئيسية بأن التقرير جاهز
+        window.parent.postMessage({
+          type: 'reportReady',
+          reportType: 'sales',
+          month: arMonth
+        }, '*');
 
       } catch (error) {
         console.error("حدث خطأ أثناء إنشاء التقرير:", error);
-        alert("حدث خطأ أثناء إنشاء التقرير: " + error.message);
+        window.parent.postMessage({
+          type: 'reportError',
+          message: 'حدث خطأ أثناء إنشاء التقرير'
+        }, '*');
       }
     }
 
-    // تشغيل الدالة عند تحميل الصفحة
-    window.onload = generateMonthlySalesReport;
+    // تهيئة Firebase عند الحاجة
+    if (typeof firebase === 'undefined') {
+      const firebaseConfig = {
+        apiKey: "AIzaSyDRtJBPOjpfXXfsaDo98E_NTT7KWzz8gj4",
+        authDomain: "pharmacy-system-9def6.firebaseapp.com",
+        databaseURL: "https://pharmacy-system-9def6-default-rtdb.firebaseio.com",
+        projectId: "pharmacy-system-9def6",
+        storageBucket: "pharmacy-system-9def6.appspot.com",
+        messagingSenderId: "630855008414",
+        appId: "1:630855008414:web:b464bcb81c8a2091d0fb8f",
+        measurementId: "G-LC5NDKP6QZ"
+      };
+      firebase.initializeApp(firebaseConfig);
+    }
   </script>
   
   <!-- إضافة مكتبة html2pdf.js -->
