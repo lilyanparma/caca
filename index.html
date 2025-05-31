@@ -42,7 +42,6 @@
             width: 100%;
         }
         
-        /* تصميم الهيدر */
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -82,7 +81,6 @@
             margin-left: 8px;
         }
         
-        /* تصميم أزرار التقارير الجديدة */
         .report-buttons {
             display: flex;
             gap: 15px;
@@ -137,7 +135,6 @@
             font-size: 1.3rem;
         }
         
-        /* ألوان الأزرار المختلفة */
         .sales-btn {
             background: linear-gradient(135deg, #4361ee, #3a0ca3);
         }
@@ -146,7 +143,6 @@
             background: linear-gradient(135deg, #8a2be2, #6a0dad);
         }
         
-        /* محتوى التقارير المخفي */
         .report-content {
             display: none;
             background: white;
@@ -181,7 +177,6 @@
             transform: translateY(0);
         }
         
-        /* تصميم الأقسام */
         .report-section {
             margin-bottom: 25px;
         }
@@ -201,7 +196,6 @@
             color: var(--accent-color);
         }
         
-        /* تصميم عناصر التحكم */
         .control-group {
             margin-bottom: 20px;
         }
@@ -239,7 +233,6 @@
             box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
         }
         
-        /* تأثير النص الزهري النابض للشهر الحالي */
         @keyframes textPulse {
             0% { color: var(--current-month-color); }
             50% { color: #ff4785; }
@@ -251,7 +244,6 @@
             font-weight: bold;
         }
         
-        /* تصميم أزرار التقرير */
         .report-action-btn {
             display: inline-flex;
             align-items: center;
@@ -278,7 +270,6 @@
             margin-left: 10px;
         }
         
-        /* تصميم الإشعارات */
         .notification {
             position: fixed;
             top: 20px;
@@ -346,7 +337,27 @@
             padding: 5px;
         }
         
-        /* تصميم متجاوب */
+        /* إضافة iframe لعرض الفواتير */
+        .invoice-frame-container {
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            height: 0;
+            transition: height 0.4s ease-out;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .invoice-frame-container.active {
+            height: 70vh;
+        }
+        
+        #invoiceFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+        
         @media (max-width: 768px) {
             .header {
                 padding: 20px 0;
@@ -393,6 +404,10 @@
                 width: 100%;
                 padding: 14px;
             }
+            
+            .invoice-frame-container.active {
+                height: 50vh;
+            }
         }
         
         @media (min-width: 769px) {
@@ -427,7 +442,6 @@
             }
         }
 
-        /* تحسينات لشاشات الكمبيوتر */
         @media (min-width: 769px) {
             .container {
                 padding: 30px;
@@ -504,7 +518,6 @@
             }
         }
 
-        /* تحسينات إضافية للشاشات الكبيرة جداً */
         @media (min-width: 1200px) {
             .report-content {
                 padding: 40px 50px;
@@ -520,13 +533,11 @@
 </head>
 <body>
     <div class="container">
-        <!-- رأس الصفحة المطور -->
         <header class="header">
             <h1><i class="fas fa-file-invoice-dollar"></i> نظام إدارة الفواتير</h1>
             <p>نظام متكامل لإدارة فواتير المبيعات والخدمات الشهرية</p>
         </header>
         
-        <!-- أزرار التقارير الجديدة -->
         <div class="report-buttons">
             <button class="report-btn sales-btn" onclick="toggleReport('sales-report')">
                 <i class="fas fa-cash-register"></i> تقارير المبيعات
@@ -536,7 +547,6 @@
             </button>
         </div>
         
-        <!-- محتوى تقارير المبيعات -->
         <div id="sales-report" class="report-content">
             <div class="report-section">
                 <h2><i class="fas fa-chart-line"></i> كشوفات المبيعات الشهرية</h2>
@@ -553,13 +563,12 @@
                     </div>
                 </div>
                 
-                <button class="report-action-btn" onclick="downloadSalesReport()">
-                    <i class="fas fa-file-pdf"></i> إنشاء تقرير PDF
+                <button class="report-action-btn" onclick="showSalesInvoice()">
+                    <i class="fas fa-file-invoice"></i> عرض فاتورة المبيعات
                 </button>
             </div>
         </div>
         
-        <!-- محتوى تقارير الخدمات -->
         <div id="services-report" class="report-content">
             <div class="report-section">
                 <h2><i class="fas fa-chart-pie"></i> كشوفات الخدمات الشهرية</h2>
@@ -576,14 +585,18 @@
                     </div>
                 </div>
                 
-                <button class="report-action-btn" onclick="downloadServicesReport()">
-                    <i class="fas fa-file-pdf"></i> إنشاء تقرير PDF
+                <button class="report-action-btn" onclick="showServicesInvoice()">
+                    <i class="fas fa-file-invoice"></i> عرض فاتورة الخدمات
                 </button>
             </div>
         </div>
+        
+        <!-- حاوية iframe الجديدة -->
+        <div id="invoiceContainer" class="invoice-frame-container">
+            <iframe id="invoiceFrame" src="about:blank"></iframe>
+        </div>
     </div>
     
-    <!-- عنصر الإشعارات -->
     <div id="notification" class="notification">
         <i class="fas fa-bell"></i>
         <div class="notification-content">
@@ -616,9 +629,8 @@
             const now = new Date();
             const currentYear = now.getFullYear();
             const currentMonth = now.getMonth() + 1;
-            const startYear = 2023; // سنة بداية العمل
+            const startYear = 2023;
             
-            // تهيئة قوائم السنوات
             const yearSelectors = document.querySelectorAll('.year-selector');
             yearSelectors.forEach(select => {
                 select.innerHTML = '';
@@ -630,7 +642,6 @@
                 }
                 select.value = currentYear;
                 
-                // تحديث الأشهر عند تحميل الصفحة
                 const monthId = select.id === 'sales-year' ? 'sales-month' : 'services-month';
                 updateMonths(select, monthId);
             });
@@ -657,13 +668,11 @@
                 option.value = monthValue;
                 option.textContent = arabicMonths[i];
                 
-                // إخفاء الأشهر المستقبلية للسنة الحالية
                 if (selectedYear === currentYear && monthValue > currentMonth) {
                     option.disabled = true;
                     option.style.display = 'none';
                 }
                 
-                // تمييز الشهر الحالي
                 if (selectedYear === currentYear && monthValue === currentMonth) {
                     option.classList.add('current-month');
                     option.style.color = 'var(--current-month-color)';
@@ -673,99 +682,72 @@
                 monthSelector.appendChild(option);
             }
             
-            // تحديد الشهر الحالي إذا كانت السنة المختارة هي السنة الحالية
             if (selectedYear === currentYear) {
                 monthSelector.value = currentMonth;
             } else {
-                monthSelector.value = 1; // يناير كقيمة افتراضية للسنوات الأخرى
+                monthSelector.value = 1;
             }
         }
 
-               // تبديل بين التقارير مع إمكانية الإغلاق
+        // تبديل بين التقارير مع إمكانية الإغلاق
         function toggleReport(reportId) {
             const clickedBtn = event.currentTarget;
             const targetContent = document.getElementById(reportId);
             
-            // إذا كان الزر نشطًا بالفعل (القائمة مفتوحة)
             if (clickedBtn.classList.contains('active')) {
-                // إغلاق القائمة
                 clickedBtn.classList.remove('active');
                 targetContent.classList.remove('active');
+                document.getElementById('invoiceContainer').classList.remove('active');
             } else {
-                // إغلاق جميع القوائم الأخرى أولاً
                 document.querySelectorAll('.report-content').forEach(content => {
                     content.classList.remove('active');
                 });
                 
-                // إزالة التنشيط من جميع الأزرار
                 document.querySelectorAll('.report-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 
-                // فتح القائمة المطلوبة
                 clickedBtn.classList.add('active');
                 targetContent.classList.add('active');
             }
         }
         
-        // تحميل تقرير المبيعات
-        async function downloadSalesReport() {
+        // عرض فاتورة المبيعات في iframe
+        function showSalesInvoice() {
             const year = document.getElementById('sales-year').value;
             const month = document.getElementById('sales-month').value;
             const monthName = document.querySelector('#sales-month option:checked').textContent;
             
-            showNotification('info', 'جاري المعالجة', `جارٍ تحضير تقرير مبيعات شهر ${monthName} ${year}`);
+            showNotification('info', 'جاري التحميل', `جارٍ تحميل فاتورة المبيعات لشهر ${monthName} ${year}`);
             
-            try {
-                const data = await loadInvoicesData();
-                const filteredInvoices = data.sales.filter(invoice => {
-                    const invoiceDate = new Date(invoice.date);
-                    return invoiceDate.getFullYear() == year && 
-                           (invoiceDate.getMonth() + 1) == month;
-                });
-                
-                if (filteredInvoices.length === 0) {
-                    showNotification('warning', 'لا توجد بيانات', `لا توجد فواتير مبيعات لشهر ${monthName} ${year}`);
-                    return;
-                }
-                
-                setTimeout(() => {
-                    showNotification('success', 'تم بنجاح', `تم إنشاء تقرير مبيعات ${monthName} ${year} (${filteredInvoices.length} فاتورة)`);
-                }, 1500);
-                
-            } catch (error) {
-                showNotification('error', 'خطأ', 'حدث خطأ أثناء إنشاء التقرير');
-            }
+            const frameContainer = document.getElementById('invoiceContainer');
+            const frame = document.getElementById('invoiceFrame');
+            
+            frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
+            frameContainer.classList.add('active');
+            
+            setTimeout(() => {
+                showNotification('success', 'تم التحميل', `تم تحميل فاتورة المبيعات بنجاح`);
+            }, 1000);
         }
         
-        // تحميل تقرير الخدمات
-        async function downloadServicesReport() {
+        // عرض فاتورة الخدمات في iframe
+        function showServicesInvoice() {
             const year = document.getElementById('services-year').value;
             const month = document.getElementById('services-month').value;
             const monthName = document.querySelector('#services-month option:checked').textContent;
             
-            showNotification('info', 'جاري المعالجة', `جارٍ تحضير تقرير خدمات شهر ${monthName} ${year}`);
+            showNotification('info', 'جاري التحميل', `جارٍ تحميل فاتورة الخدمات لشهر ${monthName} ${year}`);
             
-            try {
-                const data = await loadInvoicesData();
-                const filteredInvoices = data.services.filter(invoice => {
-                    const invoiceDate = new Date(invoice.date);
-                    return invoiceDate.getFullYear() == year && 
-                           (invoiceDate.getMonth() + 1) == month;
-                });
-                
-                if (filteredInvoices.length === 0) {
-                    showNotification('warning', 'لا توجد بيانات', `لا توجد فواتير خدمات لشهر ${monthName} ${year}`);
-                    return;
-                }
-                
-                setTimeout(() => {
-                    showNotification('success', 'تم بنجاح', `تم إنشاء تقرير خدمات ${monthName} ${year} (${filteredInvoices.length} فاتورة)`);
-                }, 1500);
-                
-            } catch (error) {
-                showNotification('error', 'خطأ', 'حدث خطأ أثناء إنشاء التقرير');
-            }
+            const frameContainer = document.getElementById('invoiceContainer');
+            const frame = document.getElementById('invoiceFrame');
+            
+            frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
+            frameContainer.classList.add('active');
+            
+            setTimeout(() => {
+                showNotification('success', 'تم التحميل', `تم تحميل فاتورة الخدمات بنجاح`);
+            }, 1000);
         }
         
         // عرض الإشعارات
