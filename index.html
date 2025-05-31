@@ -7,16 +7,17 @@
     <style>
         :root {
             --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
+            --secondary-color: #3a0ca3;
             --accent-color: #4895ef;
-            --current-month-color: #ff6b9d;
+            --current-month-color: #f72585;
             --dark-color: #2b2d42;
             --light-color: #f8f9fa;
             --success-color: #4cc9f0;
             --warning-color: #f8961e;
             --danger-color: #f72585;
-            --border-radius: 12px;
-            --box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            --border-radius: 10px;
+            --box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --mobile-box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             --transition: all 0.3s ease;
         }
         
@@ -31,21 +32,23 @@
             background-color: #f5f7ff;
             color: var(--dark-color);
             line-height: 1.6;
+            min-height: 100vh;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
+            width: 100%;
         }
         
         /* تصميم الهيدر */
         .header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 30px 0;
+            padding: 25px 0;
             border-radius: var(--border-radius);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             box-shadow: var(--box-shadow);
             text-align: center;
             position: relative;
@@ -59,24 +62,24 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
             transform: rotate(30deg);
         }
         
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
             position: relative;
         }
         
         .header p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
             position: relative;
         }
         
         .header i {
-            margin-left: 10px;
+            margin-left: 8px;
         }
         
         /* تصميم التبويبات */
@@ -85,23 +88,25 @@
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             overflow: hidden;
         }
         
         .tab {
             flex: 1;
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             cursor: pointer;
             font-weight: bold;
             transition: var(--transition);
             position: relative;
             color: var(--dark-color);
+            font-size: 0.9rem;
         }
         
         .tab:hover {
             color: var(--primary-color);
+            background-color: #f8f9fa;
         }
         
         .tab.active {
@@ -115,14 +120,14 @@
             left: 50%;
             transform: translateX(-50%);
             width: 80%;
-            height: 4px;
+            height: 3px;
             background: var(--accent-color);
             border-radius: 2px;
         }
         
         .tab i {
-            margin-left: 8px;
-            font-size: 1.2rem;
+            margin-left: 6px;
+            font-size: 1rem;
         }
         
         /* محتوى التبويبات */
@@ -131,7 +136,7 @@
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            padding: 30px;
+            padding: 20px;
             animation: fadeIn 0.5s ease;
         }
         
@@ -146,63 +151,70 @@
         
         /* تصميم الأقسام */
         .report-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .report-section h2 {
             color: var(--primary-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
-            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
         }
         
         .report-section h2 i {
-            margin-left: 10px;
+            margin-left: 8px;
             color: var(--accent-color);
         }
         
         /* تصميم عناصر التحكم */
         .control-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: bold;
             color: var(--dark-color);
+            font-size: 0.9rem;
         }
         
         .select-group {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
         
         select {
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
+            padding: 10px 12px;
+            border: 1px solid #e9ecef;
             border-radius: var(--border-radius);
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: var(--transition);
             background: white;
             cursor: pointer;
-            min-width: 150px;
+            min-width: 120px;
+            flex: 1;
+        }
+        
+        select:focus {
+            border-color: var(--accent-color);
+            outline: none;
         }
         
         /* تأثير النص الزهري النابض للشهر الحالي */
         @keyframes textPulse {
-            0% { color: var(--current-month-color); transform: scale(1); }
-            50% { color: #ff4785; transform: scale(1.05); }
-            100% { color: var(--current-month-color); transform: scale(1); }
+            0% { color: var(--current-month-color); }
+            50% { color: #ff4785; }
+            100% { color: var(--current-month-color); }
         }
         
         .month-selector option.current-month {
-            animation: textPulse 1.5s infinite;
+            animation: textPulse 2s infinite;
             font-weight: bold;
         }
         
@@ -211,14 +223,14 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 28px;
+            padding: 10px 20px;
             border: none;
             border-radius: var(--border-radius);
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: var(--mobile-box-shadow);
         }
         
         .btn-primary {
@@ -228,20 +240,21 @@
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
         }
         
         .btn i {
-            margin-left: 8px;
+            margin-left: 6px;
         }
         
         /* تصميم الإشعارات */
         .notification {
             position: fixed;
-            top: 30px;
-            right: 30px;
-            max-width: 350px;
-            padding: 18px 25px;
+            top: 20px;
+            right: 15px;
+            max-width: 300px;
+            width: calc(100% - 30px);
+            padding: 15px;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             background: white;
@@ -257,8 +270,8 @@
         }
         
         .notification i {
-            margin-left: 15px;
-            font-size: 1.5rem;
+            margin-left: 10px;
+            font-size: 1.3rem;
         }
         
         .notification.success {
@@ -273,13 +286,23 @@
             border-right: 4px solid var(--danger-color);
         }
         
+        .notification.info {
+            border-right: 4px solid var(--accent-color);
+        }
+        
         .notification-content {
             flex: 1;
         }
         
         .notification-title {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
+            font-size: 0.95rem;
+        }
+        
+        .notification-message {
+            font-size: 0.85rem;
+            color: #495057;
         }
         
         .close-notification {
@@ -287,32 +310,85 @@
             border: none;
             cursor: pointer;
             color: #adb5bd;
-            font-size: 1.2rem;
+            font-size: 1rem;
             margin-right: -5px;
+            padding: 5px;
         }
         
         /* تصميم متجاوب */
         @media (max-width: 768px) {
+            .header {
+                padding: 20px 0;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
             .tabs {
                 flex-direction: column;
             }
             
-            .header h1 {
-                font-size: 1.8rem;
+            .tab {
+                padding: 12px;
             }
             
             .tab-content {
-                padding: 20px;
+                padding: 15px;
             }
             
-            .notification {
-                max-width: 280px;
-                right: 15px;
+            .report-section h2 {
+                font-size: 1.2rem;
             }
             
             .select-group {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
+            }
+            
+            select {
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .header {
+                padding: 30px 0;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .tab {
+                padding: 18px;
+                font-size: 1rem;
+            }
+            
+            .tab i {
+                font-size: 1.1rem;
+            }
+            
+            .tab-content {
+                padding: 25px;
+            }
+            
+            .notification {
+                max-width: 350px;
+                right: 20px;
             }
         }
     </style>
@@ -345,7 +421,7 @@
                 <div class="select-group">
                     <div class="control-group">
                         <label for="sales-year">اختر السنة</label>
-                        <select id="sales-year" class="year-selector"></select>
+                        <select id="sales-year" class="year-selector" onchange="updateMonths(this, 'sales-month')"></select>
                     </div>
                     
                     <div class="control-group">
@@ -368,7 +444,7 @@
                 <div class="select-group">
                     <div class="control-group">
                         <label for="services-year">اختر السنة</label>
-                        <select id="services-year" class="year-selector"></select>
+                        <select id="services-year" class="year-selector" onchange="updateMonths(this, 'services-month')"></select>
                     </div>
                     
                     <div class="control-group">
@@ -430,41 +506,56 @@
                     select.appendChild(option);
                 }
                 select.value = currentYear;
+                
+                // تحديث الأشهر عند تحميل الصفحة
+                const monthId = select.id === 'sales-year' ? 'sales-month' : 'services-month';
+                updateMonths(select, monthId);
             });
+        }
+
+        // تحديث قائمة الأشهر عند تغيير السنة
+        function updateMonths(yearSelect, monthId) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            const selectedYear = parseInt(yearSelect.value);
             
-            // تهيئة قوائم الأشهر
-            const monthSelectors = document.querySelectorAll('.month-selector');
+            const monthSelector = document.getElementById(monthId);
             const arabicMonths = [
                 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
                 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
             ];
             
-            monthSelectors.forEach(select => {
-                select.innerHTML = '';
-                const selectedYear = parseInt(select.closest('.select-group').querySelector('.year-selector').value);
+            monthSelector.innerHTML = '';
+            
+            for (let i = 0; i < 12; i++) {
+                const monthValue = i + 1;
+                const option = document.createElement('option');
+                option.value = monthValue;
+                option.textContent = arabicMonths[i];
                 
-                for (let i = 0; i < 12; i++) {
-                    const monthValue = i + 1;
-                    const option = document.createElement('option');
-                    option.value = monthValue;
-                    option.textContent = arabicMonths[i];
-                    
-                    // إخفاء الأشهر المستقبلية للسنة الحالية
-                    if (selectedYear === currentYear && monthValue > currentMonth) {
-                        option.disabled = true;
-                        option.style.display = 'none';
-                    }
-                    
-                    // تمييز الشهر الحالي
-                    if (selectedYear === currentYear && monthValue === currentMonth) {
-                        option.classList.add('current-month');
-                    }
-                    
-                    select.appendChild(option);
+                // إخفاء الأشهر المستقبلية للسنة الحالية
+                if (selectedYear === currentYear && monthValue > currentMonth) {
+                    option.disabled = true;
+                    option.style.display = 'none';
                 }
                 
-                select.value = currentMonth;
-            });
+                // تمييز الشهر الحالي
+                if (selectedYear === currentYear && monthValue === currentMonth) {
+                    option.classList.add('current-month');
+                    option.style.color = 'var(--current-month-color)';
+                    option.style.fontWeight = 'bold';
+                }
+                
+                monthSelector.appendChild(option);
+            }
+            
+            // تحديد الشهر الحالي إذا كانت السنة المختارة هي السنة الحالية
+            if (selectedYear === currentYear) {
+                monthSelector.value = currentMonth;
+            } else {
+                monthSelector.value = 1; // يناير كقيمة افتراضية للسنوات الأخرى
+            }
         }
 
         // تبديل بين التبويبات
@@ -565,51 +656,9 @@
             document.getElementById('notification').classList.remove('show');
         }
         
-        // تحديث الأشهر عند تغيير السنة
-        function setupYearChangeListeners() {
-            document.querySelectorAll('.year-selector').forEach(select => {
-                select.addEventListener('change', function() {
-                    const now = new Date();
-                    const currentYear = now.getFullYear();
-                    const currentMonth = now.getMonth() + 1;
-                    const selectedYear = parseInt(this.value);
-                    
-                    const monthSelector = this.closest('.select-group').querySelector('.month-selector');
-                    const arabicMonths = [
-                        'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
-                        'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
-                    ];
-                    
-                    monthSelector.innerHTML = '';
-                    
-                    for (let i = 0; i < 12; i++) {
-                        const monthValue = i + 1;
-                        const option = document.createElement('option');
-                        option.value = monthValue;
-                        option.textContent = arabicMonths[i];
-                        
-                        // إخفاء الأشهر المستقبلية للسنة الحالية
-                        if (selectedYear === currentYear && monthValue > currentMonth) {
-                            option.disabled = true;
-                            option.style.display = 'none';
-                        }
-                        
-                        // تمييز الشهر الحالي
-                        if (selectedYear === currentYear && monthValue === currentMonth) {
-                            option.classList.add('current-month');
-                            monthSelector.value = monthValue;
-                        }
-                        
-                        monthSelector.appendChild(option);
-                    }
-                });
-            });
-        }
-        
         // تهيئة الصفحة عند التحميل
         document.addEventListener('DOMContentLoaded', function() {
             initDateSelectors();
-            setupYearChangeListeners();
         });
     </script>
 </body>
