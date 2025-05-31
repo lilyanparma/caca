@@ -681,23 +681,28 @@
             }
         }
 
-        // تبديل بين التقارير
+               // تبديل بين التقارير مع إمكانية الإغلاق
         function toggleReport(reportId) {
-            // إخفاء جميع محتويات التقارير
-            document.querySelectorAll('.report-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            // إزالة التنشيط من جميع الأزرار
-            document.querySelectorAll('.report-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // تنشيط الزر المحدد فقط إذا لم يكن نشطاً بالفعل
             const clickedBtn = event.currentTarget;
             const targetContent = document.getElementById(reportId);
             
-            if (!clickedBtn.classList.contains('active')) {
+            // إذا كان الزر نشطًا بالفعل (القائمة مفتوحة)
+            if (clickedBtn.classList.contains('active')) {
+                // إغلاق القائمة
+                clickedBtn.classList.remove('active');
+                targetContent.classList.remove('active');
+            } else {
+                // إغلاق جميع القوائم الأخرى أولاً
+                document.querySelectorAll('.report-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // إزالة التنشيط من جميع الأزرار
+                document.querySelectorAll('.report-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // فتح القائمة المطلوبة
                 clickedBtn.classList.add('active');
                 targetContent.classList.add('active');
             }
