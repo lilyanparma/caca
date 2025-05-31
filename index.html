@@ -337,7 +337,7 @@
             padding: 5px;
         }
         
-        /* نافذة الفاتورة المنبثقة */
+        /* نافذة الفاتورة المنبثقة - تصميم محسن */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -352,6 +352,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
+            padding: 15px;
         }
         
         .modal-overlay.active {
@@ -363,10 +364,12 @@
             background-color: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            width: 90%;
+            width: 100%;
             max-width: 1000px;
+            height: 90vh;
             max-height: 90vh;
-            overflow: auto;
+            display: flex;
+            flex-direction: column;
             position: relative;
             transform: translateY(20px);
             transition: transform 0.3s ease;
@@ -385,6 +388,7 @@
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             border-radius: var(--border-radius) var(--border-radius) 0 0;
+            flex-shrink: 0;
         }
         
         .modal-title {
@@ -402,8 +406,16 @@
         }
         
         .modal-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+        }
+        
+        .invoice-container {
+            flex: 1;
+            overflow: auto;
             padding: 20px;
-            min-height: 300px;
         }
         
         .modal-footer {
@@ -412,6 +424,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            flex-shrink: 0;
         }
         
         .modal-btn {
@@ -449,7 +462,7 @@
             background-color: #5a6268;
         }
         
-        /* تصميم الفاتورة */
+        /* تصميم الفاتورة المعدل */
         .invoice-template {
             font-family: 'Tajawal', sans-serif;
             width: 100%;
@@ -553,6 +566,32 @@
             font-size: 0.9rem;
         }
         
+        /* تحسينات للطباعة */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .invoice-modal, .invoice-modal * {
+                visibility: visible;
+            }
+            .invoice-modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                max-height: none;
+                box-shadow: none;
+            }
+            .modal-header, .modal-footer {
+                display: none;
+            }
+            .modal-body {
+                height: auto;
+                padding: 0;
+            }
+        }
+        
         @media (max-width: 768px) {
             .header {
                 padding: 20px 0;
@@ -601,7 +640,8 @@
             }
             
             .invoice-modal {
-                width: 95%;
+                width: 100%;
+                height: 95vh;
             }
             
             .invoice-info {
@@ -810,7 +850,7 @@
         </div>
     </div>
     
-    <!-- نافذة الفاتورة المنبثقة (معدلة) -->
+    <!-- نافذة الفاتورة المنبثقة (محسنة) -->
     <div id="invoiceModal" class="modal-overlay">
         <div class="invoice-modal">
             <div class="modal-header">
@@ -818,7 +858,9 @@
                 <button class="close-modal" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <iframe id="invoiceFrame" src="" style="width:100%; height:100%; border:none;"></iframe>
+                <div class="invoice-container" id="invoiceContainer">
+                    <!-- سيتم تحميل الفاتورة هنا ديناميكيًا -->
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="modal-btn save-pdf-btn" onclick="saveAsPDF()">
@@ -826,6 +868,9 @@
                 </button>
                 <button class="modal-btn close-btn" onclick="closeModal()">
                     <i class="fas fa-times"></i> إغلاق
+                </button>
+                <button class="modal-btn print-btn" onclick="printInvoice()" style="background-color: #4CAF50; color: white;">
+                    <i class="fas fa-print"></i> طباعة
                 </button>
             </div>
         </div>
@@ -868,9 +913,17 @@
         showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة المبيعات لشهر ${monthName} ${year}`);
         
         try {
-            // تحميل الفاتورة من ملف HTML الخارجي
-            const frame = document.getElementById('invoiceFrame');
-            frame.src = `monthly-sales-invoice.html?year=${year}&month=${month}`;
+            // جلب بيانات الفاتورة من Firebase
+            const snapshot = await database.ref(`sales/${year}/${month}`).once('value');
+            const salesData = snapshot.val();
+            
+            if (!salesData) {
+                showNotification('warning', 'لا توجد بيانات', `لا توجد بيانات مبيعات لشهر ${monthName} ${year}`);
+                return;
+            }
+            
+            // إنشاء الفاتورة ديناميكيًا
+            generateInvoice('sales', year, month, monthName, salesData);
             
             document.getElementById('modalTitle').textContent = `فاتورة المبيعات - ${monthName} ${year}`;
             showModal();
@@ -891,9 +944,17 @@
         showNotification('info', 'جاري التحميل', `جارٍ إنشاء فاتورة الخدمات لشهر ${monthName} ${year}`);
         
         try {
-            // تحميل الفاتورة من ملف HTML الخارجي
-            const frame = document.getElementById('invoiceFrame');
-            frame.src = `monthly-services-invoice.html?year=${year}&month=${month}`;
+            // جلب بيانات الفاتورة من Firebase
+            const snapshot = await database.ref(`services/${year}/${month}`).once('value');
+            const servicesData = snapshot.val();
+            
+            if (!servicesData) {
+                showNotification('warning', 'لا توجد بيانات', `لا توجد بيانات خدمات لشهر ${monthName} ${year}`);
+                return;
+            }
+            
+            // إنشاء الفاتورة ديناميكيًا
+            generateInvoice('services', year, month, monthName, servicesData);
             
             document.getElementById('modalTitle').textContent = `فاتورة الخدمات - ${monthName} ${year}`;
             showModal();
@@ -905,22 +966,92 @@
         }
     }
 
-    // حفظ كـ PDF (معدلة للعمل مع iframe)
+    // إنشاء الفاتورة ديناميكيًا
+    function generateInvoice(type, year, month, monthName, data) {
+        const invoiceContainer = document.getElementById('invoiceContainer');
+        
+        // حساب الإجمالي
+        let total = 0;
+        const items = Object.values(data).map(item => {
+            total += item.price * item.quantity;
+            return {
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                total: item.price * item.quantity
+            };
+        });
+        
+        // إنشاء HTML الفاتورة
+        const invoiceHTML = `
+            <div class="invoice-template">
+                <div class="invoice-header">
+                    <h1 class="invoice-title">صيدليتي</h1>
+                    <h2 class="invoice-subtitle">فاتورة ${type === 'sales' ? 'مبيعات' : 'خدمات'} - ${monthName} ${year}</h2>
+                </div>
+                
+                <div class="invoice-info">
+                    <div class="invoice-info-item">
+                        <div class="invoice-info-label">تاريخ الفاتورة:</div>
+                        <div>${new Date().toLocaleDateString('ar-EG')}</div>
+                    </div>
+                    <div class="invoice-info-item">
+                        <div class="invoice-info-label">رقم الفاتورة:</div>
+                        <div>${type.toUpperCase()}-${year}${month.toString().padStart(2, '0')}</div>
+                    </div>
+                </div>
+                
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>السعر</th>
+                            <th>الكمية</th>
+                            <th>المجموع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(item => `
+                            <tr>
+                                <td>${item.name}</td>
+                                <td>${item.price.toFixed(2)} ج.م</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.total.toFixed(2)} ج.م</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                
+                <div class="invoice-totals">
+                    <div class="invoice-totals-row">
+                        <span class="invoice-totals-label">المجموع الكلي:</span>
+                        <span class="invoice-totals-value">${total.toFixed(2)} ج.م</span>
+                    </div>
+                </div>
+                
+                <div class="invoice-footer">
+                    <p>شكراً لتعاملكم مع صيدليتي</p>
+                    <p>هذه الفاتورة صادرة إلكترونياً ولا تحتاج إلى ختم</p>
+                </div>
+            </div>
+        `;
+        
+        invoiceContainer.innerHTML = invoiceHTML;
+    }
+
+    // حفظ كـ PDF
     function saveAsPDF() {
         showNotification('info', 'جاري التحميل', 'جارٍ تحويل الفاتورة إلى PDF');
         
-        const iframe = document.getElementById('invoiceFrame');
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        const element = iframeDoc.body;
-        
+        const element = document.getElementById('invoiceContainer');
         const opt = {
             margin: 10,
             filename: document.getElementById('modalTitle').textContent + '.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
                 scale: 2,
-                windowWidth: iframeDoc.body.scrollWidth,
-                windowHeight: iframeDoc.body.scrollHeight
+                windowWidth: element.scrollWidth,
+                windowHeight: element.scrollHeight
             },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
@@ -931,6 +1062,11 @@
             console.error('Error generating PDF:', err);
             showNotification('error', 'خطأ', 'تعذر حفظ الفاتورة كـ PDF');
         });
+    }
+    
+    // طباعة الفاتورة
+    function printInvoice() {
+        window.print();
     }
 
     // تهيئة السنوات والأشهر
@@ -1017,17 +1153,6 @@
             
             clickedBtn.classList.add('active');
             targetContent.classList.add('active');
-        }
-    }
-    
-    // حفظ الفاتورة في Firebase
-    async function saveInvoiceToFirebase(type, year, month, data) {
-        try {
-            await database.ref(`invoices/${type}/${year}/${month}`).set(data);
-            console.log('Invoice saved to Firebase');
-        } catch (error) {
-            console.error('Error saving invoice:', error);
-            throw error;
         }
     }
     
