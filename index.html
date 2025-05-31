@@ -206,26 +206,16 @@
             outline: none;
         }
         
-        /* تأثير الشهر الحالي - كمبيوتر فقط */
-        @media (min-width: 769px) {
-            @keyframes strongPulse {
-                0% { color: #f72585; transform: scale(1); }
-                50% { color: #ff006e; transform: scale(1.1); }
-                100% { color: #f72585; transform: scale(1); }
-            }
-            
-            .month-selector option.current-month {
-                animation: strongPulse 1s infinite;
-                font-weight: bold;
-            }
+        /* تأثير النص الزهري النابض للشهر الحالي */
+        @keyframes textPulse {
+            0% { color: var(--current-month-color); }
+            50% { color: #ff4785; }
+            100% { color: var(--current-month-color); }
         }
-
-        /* تأثير الشهر الحالي - جوال فقط */
-        @media (max-width: 768px) {
-            .month-selector option.current-month {
-                color: #f72585;
-                font-weight: bold;
-            }
+        
+        .month-selector option.current-month {
+            animation: textPulse 2s infinite;
+            font-weight: bold;
         }
         
         /* تصميم الأزرار */
@@ -325,7 +315,83 @@
             padding: 5px;
         }
         
-        /* تحسينات لشاشات الكمبيوتر */
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .header {
+                padding: 20px 0;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                padding: 12px;
+            }
+            
+            .tab-content {
+                padding: 15px;
+            }
+            
+            .report-section h2 {
+                font-size: 1.2rem;
+            }
+            
+            .select-group {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            select {
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .header {
+                padding: 30px 0;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .tab {
+                padding: 18px;
+                font-size: 1rem;
+            }
+            
+            .tab i {
+                font-size: 1.1rem;
+            }
+            
+            .tab-content {
+                padding: 25px;
+            }
+            
+            .notification {
+                max-width: 350px;
+                right: 20px;
+            }
+            
+                   /* تحسينات لشاشات الكمبيوتر */
         @media (min-width: 769px) {
             .container {
                 padding: 30px;
@@ -415,6 +481,8 @@
             select {
                 min-width: 200px;
             }
+        }
+            
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -568,6 +636,7 @@
                 // تمييز الشهر الحالي
                 if (selectedYear === currentYear && monthValue === currentMonth) {
                     option.classList.add('current-month');
+                    option.style.color = 'var(--current-month-color)';
                     option.style.fontWeight = 'bold';
                 }
                 
