@@ -82,71 +82,103 @@
             margin-left: 8px;
         }
         
-        /* تصميم التبويبات */
-        .tabs {
+        /* تصميم أزرار التقارير الجديدة */
+        .report-buttons {
             display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .report-btn {
+            min-width: 220px;
             background: white;
+            border: none;
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 15px;
-            cursor: pointer;
+            padding: 18px 25px;
+            font-size: 1.1rem;
             font-weight: bold;
+            color: white;
+            cursor: pointer;
             transition: var(--transition);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: relative;
-            color: var(--dark-color);
-            font-size: 0.9rem;
+            overflow: hidden;
+            z-index: 1;
         }
         
-        .tab:hover {
-            color: var(--primary-color);
-            background-color: #f8f9fa;
-        }
-        
-        .tab.active {
-            color: var(--primary-color);
-        }
-        
-        .tab.active::after {
+        .report-btn::before {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 3px;
-            background: var(--accent-color);
-            border-radius: 2px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            z-index: -1;
+            transition: var(--transition);
         }
         
-        .tab i {
-            margin-left: 6px;
-            font-size: 1rem;
+        .report-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         
-        /* محتوى التبويبات */
-        .tab-content {
+        .report-btn:hover::before {
+            transform: scale(1.05);
+        }
+        
+        .report-btn i {
+            margin-left: 10px;
+            font-size: 1.3rem;
+        }
+        
+        /* ألوان الأزرار المختلفة */
+        .sales-btn {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+        
+        .services-btn {
+            background: linear-gradient(135deg, #8a2be2, #6a0dad);
+        }
+        
+        /* محتوى التقارير المخفي */
+        .report-content {
             display: none;
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
-            padding: 20px;
-            animation: fadeIn 0.5s ease;
+            padding: 0;
+            margin-bottom: 20px;
+            overflow: hidden;
+            animation: slideDown 0.4s ease-out;
+            transform-origin: top;
+            opacity: 0;
+            height: 0;
+            transition: all 0.4s ease-out;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        .tab-content.active {
+        .report-content.active {
             display: block;
+            opacity: 1;
+            height: auto;
+            padding: 25px;
+            transform: translateY(0);
         }
         
         /* تصميم الأقسام */
@@ -156,16 +188,16 @@
         
         .report-section h2 {
             color: var(--primary-color);
-            margin-bottom: 15px;
-            padding-bottom: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #eee;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
         }
         
         .report-section h2 i {
-            margin-left: 8px;
+            margin-left: 10px;
             color: var(--accent-color);
         }
         
@@ -176,34 +208,35 @@
         
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-weight: bold;
             color: var(--dark-color);
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
         
         .select-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
         
         select {
-            padding: 10px 12px;
+            padding: 12px 15px;
             border: 1px solid #e9ecef;
             border-radius: var(--border-radius);
-            font-size: 0.9rem;
+            font-size: 1rem;
             transition: var(--transition);
             background: white;
             cursor: pointer;
-            min-width: 120px;
+            min-width: 150px;
             flex: 1;
         }
         
         select:focus {
             border-color: var(--accent-color);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
         }
         
         /* تأثير النص الزهري النابض للشهر الحالي */
@@ -218,33 +251,31 @@
             font-weight: bold;
         }
         
-        /* تصميم الأزرار */
-        .btn {
+        /* تصميم أزرار التقرير */
+        .report-action-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border: none;
             border-radius: var(--border-radius);
-            font-size: 0.9rem;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: var(--mobile-box-shadow);
-        }
-        
-        .btn-primary {
+            box-shadow: var(--box-shadow);
             background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
             color: white;
+            margin-top: 10px;
         }
         
-        .btn-primary:hover {
+        .report-action-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.25);
         }
         
-        .btn i {
-            margin-left: 6px;
+        .report-action-btn i {
+            margin-left: 10px;
         }
         
         /* تصميم الإشعارات */
@@ -329,16 +360,20 @@
                 font-size: 0.9rem;
             }
             
-            .tabs {
+            .report-buttons {
                 flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
             }
             
-            .tab {
-                padding: 12px;
+            .report-btn {
+                width: 100%;
+                padding: 16px;
+                font-size: 1rem;
             }
             
-            .tab-content {
-                padding: 15px;
+            .report-content {
+                padding: 20px;
             }
             
             .report-section h2 {
@@ -347,16 +382,16 @@
             
             .select-group {
                 flex-direction: column;
-                gap: 8px;
+                gap: 12px;
             }
             
             select {
                 width: 100%;
             }
             
-            .btn {
+            .report-action-btn {
                 width: 100%;
-                padding: 12px;
+                padding: 14px;
             }
         }
         
@@ -373,25 +408,26 @@
                 font-size: 1.1rem;
             }
             
-            .tab {
-                padding: 18px;
-                font-size: 1rem;
+            .report-btn {
+                padding: 20px 30px;
+                font-size: 1.2rem;
             }
             
-            .tab i {
-                font-size: 1.1rem;
+            .report-btn i {
+                font-size: 1.4rem;
             }
             
-            .tab-content {
-                padding: 25px;
+            .report-content {
+                padding: 30px;
             }
             
             .notification {
                 max-width: 350px;
                 right: 20px;
             }
-            
-                   /* تحسينات لشاشات الكمبيوتر */
+        }
+
+        /* تحسينات لشاشات الكمبيوتر */
         @media (min-width: 769px) {
             .container {
                 padding: 30px;
@@ -409,27 +445,27 @@
                 font-size: 1.2rem;
             }
             
-            .tab {
-                padding: 20px;
-                font-size: 1.1rem;
+            .report-btn {
+                min-width: 250px;
+                padding: 22px 35px;
+                font-size: 1.3rem;
             }
             
-            .tab i {
-                font-size: 1.2rem;
+            .report-btn i {
+                font-size: 1.5rem;
             }
             
-            .tab-content {
-                padding: 35px;
+            .report-content {
+                padding: 35px 40px;
             }
             
             .report-section {
-                margin-bottom: 35px;
+                margin-bottom: 30px;
             }
             
             .report-section h2 {
                 font-size: 1.6rem;
                 margin-bottom: 25px;
-                padding-bottom: 12px;
             }
             
             .select-group {
@@ -438,19 +474,19 @@
             }
             
             select {
-                padding: 12px 15px;
-                font-size: 1rem;
-                min-width: 180px;
+                padding: 14px 18px;
+                font-size: 1.1rem;
+                min-width: 200px;
             }
             
             label {
-                font-size: 1rem;
-                margin-bottom: 10px;
+                font-size: 1.1rem;
+                margin-bottom: 12px;
             }
             
-            .btn {
-                padding: 14px 28px;
-                font-size: 1.1rem;
+            .report-action-btn {
+                padding: 15px 30px;
+                font-size: 1.2rem;
             }
             
             .notification {
@@ -470,19 +506,13 @@
 
         /* تحسينات إضافية للشاشات الكبيرة جداً */
         @media (min-width: 1200px) {
-            .tab-content {
+            .report-content {
                 padding: 40px 50px;
             }
             
             .select-group {
-                gap: 30px;
+                gap: 25px;
             }
-            
-            select {
-                min-width: 200px;
-            }
-        }
-            
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -496,18 +526,18 @@
             <p>نظام متكامل لإدارة فواتير المبيعات والخدمات الشهرية</p>
         </header>
         
-        <!-- تبويبات المبيعات والخدمات -->
-        <div class="tabs">
-            <div class="tab active" onclick="showTab('sales-reports')">
+        <!-- أزرار التقارير الجديدة -->
+        <div class="report-buttons">
+            <button class="report-btn sales-btn" onclick="toggleReport('sales-report')">
                 <i class="fas fa-cash-register"></i> تقارير المبيعات
-            </div>
-            <div class="tab" onclick="showTab('services-reports')">
+            </button>
+            <button class="report-btn services-btn" onclick="toggleReport('services-report')">
                 <i class="fas fa-concierge-bell"></i> تقارير الخدمات
-            </div>
+            </button>
         </div>
         
-        <!-- محتوى تبويب المبيعات -->
-        <div id="sales-reports" class="tab-content active">
+        <!-- محتوى تقارير المبيعات -->
+        <div id="sales-report" class="report-content">
             <div class="report-section">
                 <h2><i class="fas fa-chart-line"></i> كشوفات المبيعات الشهرية</h2>
                 
@@ -523,14 +553,14 @@
                     </div>
                 </div>
                 
-                <button class="btn btn-primary" onclick="downloadSalesReport()">
+                <button class="report-action-btn" onclick="downloadSalesReport()">
                     <i class="fas fa-file-pdf"></i> إنشاء تقرير PDF
                 </button>
             </div>
         </div>
         
-        <!-- محتوى تبويب الخدمات -->
-        <div id="services-reports" class="tab-content">
+        <!-- محتوى تقارير الخدمات -->
+        <div id="services-report" class="report-content">
             <div class="report-section">
                 <h2><i class="fas fa-chart-pie"></i> كشوفات الخدمات الشهرية</h2>
                 
@@ -546,7 +576,7 @@
                     </div>
                 </div>
                 
-                <button class="btn btn-primary" onclick="downloadServicesReport()">
+                <button class="report-action-btn" onclick="downloadServicesReport()">
                     <i class="fas fa-file-pdf"></i> إنشاء تقرير PDF
                 </button>
             </div>
@@ -651,18 +681,26 @@
             }
         }
 
-        // تبديل بين التبويبات
-        function showTab(tabId) {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
+        // تبديل بين التقارير
+        function toggleReport(reportId) {
+            // إخفاء جميع محتويات التقارير
+            document.querySelectorAll('.report-content').forEach(content => {
                 content.classList.remove('active');
             });
             
-            event.currentTarget.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            // إزالة التنشيط من جميع الأزرار
+            document.querySelectorAll('.report-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // تنشيط الزر المحدد فقط إذا لم يكن نشطاً بالفعل
+            const clickedBtn = event.currentTarget;
+            const targetContent = document.getElementById(reportId);
+            
+            if (!clickedBtn.classList.contains('active')) {
+                clickedBtn.classList.add('active');
+                targetContent.classList.add('active');
+            }
         }
         
         // تحميل تقرير المبيعات
